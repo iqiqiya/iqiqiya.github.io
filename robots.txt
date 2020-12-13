@@ -1,0 +1,9 @@
+# https://iqiqiya.github.io robots.txt
+
+User-agent: * 
+Disallow: /js/
+Disallow: /css/
+Disallow: /fonts/
+
+Sitemap: https://iqiqiya.github.io/sitemap.xml
+Sitemap: https://iqiqiya.github.io/baidusitemap.xml
