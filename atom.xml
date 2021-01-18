@@ -6,7 +6,7 @@
   <link href="https://iqiqiya.com/atom.xml" rel="self"/>
   
   <link href="https://iqiqiya.com/"/>
-  <updated>2021-01-14T07:29:46.000Z</updated>
+  <updated>2021-01-18T06:23:45.000Z</updated>
   <id>https://iqiqiya.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>NetGear系列路由器漏洞分析</title>
+    <link href="https://iqiqiya.com/posts/2648de36.html"/>
+    <id>https://iqiqiya.com/posts/2648de36.html</id>
+    <published>2021-01-18T06:23:45.000Z</published>
+    <updated>2021-01-18T06:23:45.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;NetGear系列路由器漏洞利用及分析&quot;&gt;&lt;a href=&quot;#NetGear系列路由器漏洞利用及分析&quot; class=&quot;headerlink&quot; title=&quot;NetGear系列路由器漏洞利用及分析&quot;&gt;&lt;/a&gt;NetGear系列路由器漏洞利用及分析&lt;/h2&gt;&lt;h3</summary>
+        
+      
+    
+    
+    
+    <category term="漏洞复现" scheme="https://iqiqiya.com/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/"/>
+    
+    
+    <category term="漏洞复现" scheme="https://iqiqiya.com/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/"/>
+    
+    <category term="IoT" scheme="https://iqiqiya.com/tags/IoT/"/>
+    
+  </entry>
   
   <entry>
     <title>20210114随笔</title>
@@ -77,11 +104,11 @@
     <category term="hexo" scheme="https://iqiqiya.com/categories/hexo/"/>
     
     
+    <category term="hexo" scheme="https://iqiqiya.com/tags/hexo/"/>
+    
     <category term="博客迁移" scheme="https://iqiqiya.com/tags/%E5%8D%9A%E5%AE%A2%E8%BF%81%E7%A7%BB/"/>
     
     <category term="2020" scheme="https://iqiqiya.com/tags/2020/"/>
-    
-    <category term="hexo" scheme="https://iqiqiya.com/tags/hexo/"/>
     
   </entry>
   
@@ -527,34 +554,6 @@
     <category term="漏洞复现" scheme="https://iqiqiya.com/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/"/>
     
     <category term="VxWorks" scheme="https://iqiqiya.com/tags/VxWorks/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>利用Cloudflare快速发现子域名</title>
-    <link href="https://iqiqiya.com/posts/bc8b27aa.html"/>
-    <id>https://iqiqiya.com/posts/bc8b27aa.html</id>
-    <published>2020-06-15T07:42:04.000Z</published>
-    <updated>2020-06-15T07:42:04.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;使用Cloudflave的时候发现了这个小技巧，可以快速挖掘网站子域名。废话不多说，直接开始：&lt;/p&gt;
-&lt;h4 id=&quot;第一步&quot;&gt;&lt;a href=&quot;#第一步&quot; class=&quot;headerlink&quot; title=&quot;第一步&quot;&gt;&lt;/a&gt;第一步&lt;/h4&gt;&lt;p&gt;进入&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="渗透测试" scheme="https://iqiqiya.com/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
-    
-    
-    <category term="子域名" scheme="https://iqiqiya.com/tags/%E5%AD%90%E5%9F%9F%E5%90%8D/"/>
-    
-    <category term="Cloudflare" scheme="https://iqiqiya.com/tags/Cloudflare/"/>
     
   </entry>
   
