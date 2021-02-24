@@ -6,7 +6,7 @@
   <link href="https://iqiqiya.com/atom.xml" rel="self"/>
   
   <link href="https://iqiqiya.com/"/>
-  <updated>2021-01-18T06:23:45.000Z</updated>
+  <updated>2021-02-24T04:27:42.000Z</updated>
   <id>https://iqiqiya.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>解决安装mitmproxy时提示ERROR: Cannot uninstall &#39;ruamel-yaml&#39;</title>
+    <link href="https://iqiqiya.com/posts/e51995b4.html"/>
+    <id>https://iqiqiya.com/posts/e51995b4.html</id>
+    <published>2021-02-24T04:27:42.000Z</published>
+    <updated>2021-02-24T04:27:42.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;python3安装mitmproxy&quot;&gt;&lt;a href=&quot;#python3安装mitmproxy&quot; class=&quot;headerlink&quot; title=&quot;python3安装mitmproxy&quot;&gt;&lt;/a&gt;python3安装mitmproxy&lt;/h3&gt;&lt;figure</summary>
+        
+      
+    
+    
+    
+    <category term="小技巧" scheme="https://iqiqiya.com/categories/%E5%B0%8F%E6%8A%80%E5%B7%A7/"/>
+    
+    
+    <category term="mitmproxy" scheme="https://iqiqiya.com/tags/mitmproxy/"/>
+    
+    <category term="问题解决" scheme="https://iqiqiya.com/tags/%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/"/>
+    
+  </entry>
   
   <entry>
     <title>NetGear系列路由器漏洞分析</title>
@@ -73,6 +100,8 @@
     <summary type="html">Here&#39;s something encrypted, password is required to continue reading.</summary>
     
     
+    
+    <category term="随笔" scheme="https://iqiqiya.com/categories/%E9%9A%8F%E7%AC%94/"/>
     
     
     <category term="年度总结" scheme="https://iqiqiya.com/tags/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"/>
@@ -311,7 +340,7 @@
     
     <category term="工控安全" scheme="https://iqiqiya.com/categories/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/"/>
     
-    <category term="CTF竞赛" scheme="https://iqiqiya.com/categories/CTF%E7%AB%9E%E8%B5%9B/"/>
+    <category term="CTF竞赛" scheme="https://iqiqiya.com/categories/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/CTF%E7%AB%9E%E8%B5%9B/"/>
     
     
     <category term="CTF" scheme="https://iqiqiya.com/tags/CTF/"/>
@@ -523,35 +552,6 @@
     
     <category term="工控安全" scheme="https://iqiqiya.com/categories/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/"/>
     
-    
-    <category term="VxWorks" scheme="https://iqiqiya.com/tags/VxWorks/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>VxWorks漏洞复现</title>
-    <link href="https://iqiqiya.com/posts/2f09a2a6.html"/>
-    <id>https://iqiqiya.com/posts/2f09a2a6.html</id>
-    <published>2020-06-17T01:57:14.000Z</published>
-    <updated>2020-06-17T01:57:14.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;0x00-前言&quot;&gt;&lt;a href=&quot;#0x00-前言&quot; class=&quot;headerlink&quot; title=&quot;0x00 前言&quot;&gt;&lt;/a&gt;0x00 前言&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;关于VxWorks，这里引用44CON议题&lt;/strong&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="漏洞复现" scheme="https://iqiqiya.com/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/"/>
-    
-    <category term="工控安全" scheme="https://iqiqiya.com/categories/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/"/>
-    
-    
-    <category term="漏洞复现" scheme="https://iqiqiya.com/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/"/>
     
     <category term="VxWorks" scheme="https://iqiqiya.com/tags/VxWorks/"/>
     

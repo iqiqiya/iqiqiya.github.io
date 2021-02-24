@@ -502,7 +502,7 @@
   <entry>
     <title>NetGear系列路由器漏洞分析</title>
     <url>/posts/2648de36.html</url>
-    <content><![CDATA[<h2 id="NetGear系列路由器漏洞利用及分析"><a href="#NetGear系列路由器漏洞利用及分析" class="headerlink" title="NetGear系列路由器漏洞利用及分析"></a>NetGear系列路由器漏洞利用及分析</h2><h3 id="1-Netgear-R7000-Command-Injection"><a href="#1-Netgear-R7000-Command-Injection" class="headerlink" title="1. Netgear R7000 - Command Injection"></a>1. Netgear R7000 - Command Injection</h3><ul>
+    <content><![CDATA[<h2 id="NetGear系列路由器漏洞利用及分析"><a href="#NetGear系列路由器漏洞利用及分析" class="headerlink" title="NetGear系列路由器漏洞利用及分析"></a>NetGear系列路由器漏洞利用及分析</h2><h3 id="Netgear-R7000-Command-Injection"><a href="#Netgear-R7000-Command-Injection" class="headerlink" title="Netgear R7000 - Command Injection"></a>Netgear R7000 - Command Injection</h3><ul>
 <li><p>时间：2016.12.06</p>
 </li>
 <li><p>影响产品：R7000，R7000V1</p>
@@ -517,21 +517,25 @@
 <li><p>漏洞分析：</p>
 <p>使用burp进行漏洞复现，发现执行ps命令时，路由器进程信息为：</p>
 <p><img src="/posts/2648de36/image-20210118160046864.png" alt="image-20210118160046864"></p>
-<p>提取固件，发现httpd与漏洞利用点有关</p>
-<p><img src="/posts/2648de36/image-20210118151625341.png" alt="image-20210118151625341"></p>
-<p><img src="/posts/2648de36/image-20210118145823088.png" alt="image-20210118145823088"></p>
-<p>使用IDA x32分析httpd</p>
-<p>搜索字母串”cgi-bin”，找到相关代码，对应sub_36C34()函数，F5反编译可以看到伪代码</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> __fastcall <span class="title">sub_36C34</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *a1, <span class="keyword">int</span> a2, <span class="keyword">const</span> <span class="keyword">char</span> *a3, <span class="keyword">int</span> a4)</span></span></span><br></pre></td></tr></table></figure>
-
 </li>
 </ul>
-<p><img src="/posts/2648de36/image-20210118165511660.png" alt="image-20210118165511660"></p>
-<p>触发命令执行的点在197行，system(v36)，v36是由v41拼接的，“/www/cgi-bin/%s &gt; /tmp/cgi_result”</p>
-<p>根据post_data.txt 判断a1是post数据包body部分</p>
-<p><img src="/posts/2648de36/image-20210118171249349.png" alt="image-20210118171249349"></p>
-<p>由77行，得出v41最大长度为64字节，也就是说执行的payload长度最大为64字节</p>
-<p>a3是请求的url，a4是请求类型（例：post）</p>
+<p>  提取固件，发现httpd与漏洞利用点有关</p>
+<p>  <img src="/posts/2648de36/image-20210118151625341.png" alt="image-20210118151625341"></p>
+<p>  <img src="/posts/2648de36/image-20210118145823088.png" alt="image-20210118145823088"></p>
+<p>  使用IDA x32分析httpd</p>
+<p>  搜索字母串”cgi-bin”，找到相关代码，对应sub_36C34()函数，F5反编译可以看到伪代码</p>
+  <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> __fastcall <span class="title">sub_36C34</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *a1, <span class="keyword">int</span> a2, <span class="keyword">const</span> <span class="keyword">char</span> *a3, <span class="keyword">int</span> a4)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>  <img src="/posts/2648de36/image-20210118165511660.png" alt="image-20210118165511660"></p>
+<p>  触发命令执行的点在197行，system(v36)，v36是由v41拼接的，“/www/cgi-bin/%s &gt; /tmp/cgi_result”</p>
+<p>  根据post_data.txt 判断a1是post数据包body部分</p>
+<p>  <img src="/posts/2648de36/image-20210118171249349.png" alt="image-20210118171249349"></p>
+<p>  由77行，得出v41最大长度为64字节，也就是说执行的payload长度最大为64字节</p>
+<p>  a3是请求的url，a4是请求类型（例：post）</p>
+<p>  这个函数分析后，接着向上回溯，xref查看相关函数调用情况，如下图所示：</p>
+<p>  <img src="/posts/2648de36/image-20210119150413636.png" alt="image-20210119150413636">注：这里WinGraph32生成的图片有问题，少了sub_19600()函数</p>
+<p>  向上由三个函数调用了sub_36C34()，分别是sub_1A100，sub_19600，sub19B3C，这三个函数都由sub_100A0进行调用。</p>
+<p>  分析可知，</p>
 ]]></content>
       <categories>
         <category>漏洞复现</category>
@@ -1405,6 +1409,9 @@
   <script id="hbeData" type="hbeData" data-hmacdigest="5607b24007a1dc467cd2d46c1275916c77c7c0ad247a71bb9be12b8bc858f6af">5bd7661e77e9cb1685476473a81e984ccfdc03932b15f3bc8cf428b48a9412a7cf7176ac8212fbd102a70f67aa1338353a3dc6b9b2d112620975d0957a40ec11b5037d845bfe78e25b385472ea703c3ec72fadf9100ae0873ae9f587f27e6faf1c59d58d4da504599043335edd5fb645175cd525414218924d29b1d09b311cdb964aa66ffa2faab16e346e6de14d629f0433ef3bf1b23c0cb56a7ba2fbbb23db72994045217626fe57a18b84e5a12fc011372f7a2359ef3725a9406fbfb0e9b3970c7426f2b2890010947d8c7221d00f59bca1789c7d800bdd8b156416aeeb2f99832837a0e131b82bc5a84fe2d1ec827c9009b18ad4b8454bc879adf1a008ca485897ff1176ab4d2c2aa8150c3b337e544cdbc96f583ef209fe0f036e0aa2909e9088ecc3d8fcdd06b99cffa7e79329c477d4f6d63af92e997b0af352fb91520c7c64e64a7b8a3ffe4d55ec0ab8698925cca7f137cc91409444472eef7d141aae80b45917a3959fce3d1d6f93fce845987a22b6e240f750cb56995ba2a7cef1f5ed0055dc548497d6ac4d10f5b2c279f957a00c2735c0f0665c51bad2a422b44d583770dbb5d52f9f441f31a6f20d73c926550648b78c68bfa7d2b772b123a23a8cdb89b59dc7774b0cef86be33c47e65a1f34bb235538d72cf9985cfdf3b96c33ee2741a671f968b236e65be09398b9b11ffa406b4d239dab7c59384347b255bcb914cfd261ee23868a8cad61573e230291fb1cd72a606fcf85b137bd9fe5d64c1b720ea84ed77ff922c33d755c6c27cee544021923d815f637bebadb1d046dc936d02a39d0cc0210ea1c40fe61fecc461895eae47e384da08538e96c337a4b9afcba9dc2af6cedb3ec4e8fc886a5f36c7f299d1251864b94498dfe55ed83f2130bf8ae9269c48fc78ed6c274930197a9d212b4fbb8c3147efd3ea2b3e5cb7bde71a7e65028161677964641450117f84139811a1ba246535ac38e6765fe541a1110e0668da46d90df1a488077041826063293f76fb44a88f9f1b751f64d6b214157e0dea95447ff146cf9156f3cec81fc2d2a23fe1616875e7f5c40a189e4ee8bd9864a5267d384354d9d1b37b8285e74716b2a2cf818430c31e011d706e0a91658c3d4166aaf339234d34359bc40feea47efffe22c66465e60018144f37c0c64c80d536a13ec99b3849f1ad150159b381b041aea9c7531860b610798a21892a79070565538ea7d982cb402827ae88992e74ea636395c9994a82558ca6bb8c3f10edcdca430cadf1a6b86b56b4f504dc70f415937f4ed55f4ed642a6b64d63f36b335851c93e77dbbdbc96cf5ce659dbe73b8a7117d4df5317be5afe2cb34a9c990e332da33a2975ef01909f63149802712c6070b573e35347923bd5ddfe3c</script>
 </div>
 <script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+      <categories>
+        <category>随笔</category>
+      </categories>
       <tags>
         <tag>年度总结</tag>
         <tag>拜拜2020</tag>
@@ -1632,6 +1639,39 @@
       <tags>
         <tag>NSCTF</tag>
         <tag>writeup</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决安装mitmproxy时提示ERROR: Cannot uninstall &#39;ruamel-yaml&#39;</title>
+    <url>/posts/e51995b4.html</url>
+    <content><![CDATA[<h3 id="python3安装mitmproxy"><a href="#python3安装mitmproxy" class="headerlink" title="python3安装mitmproxy"></a>python3安装mitmproxy</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip3 install mitmproxy -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装失败，出现如下报错信息"><a href="#安装失败，出现如下报错信息" class="headerlink" title="安装失败，出现如下报错信息"></a>安装失败，出现如下报错信息</h4><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Installing collected packages: zstandard, Brotli, ruamel.yaml, mitmproxy</span><br><span class="line">  Attempting uninstall: ruamel.yaml</span><br><span class="line">    Found existing installation: ruamel-yaml 0.15.87</span><br><span class="line">ERROR: Cannot uninstall &#x27;ruamel-yaml&#x27;. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.</span><br></pre></td></tr></table></figure>
+
+<p><img src="/posts/e51995b4/image-20210224123606581.png" alt="image-20210224123606581"></p>
+<p>根据提示，需要安装新版本的ruamel-yaml，但是Anaconda3已经安装了 ruamel-yaml，版本是0.15.87</p>
+<p>需要进行卸载</p>
+<p>卸载出错</p>
+<h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><h5 id="方法一：强制删除ruamel-yaml"><a href="#方法一：强制删除ruamel-yaml" class="headerlink" title="方法一：强制删除ruamel-yaml"></a>方法一：强制删除ruamel-yaml</h5><p>找到安装路径，比如</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rm -rf C:\software\Anaconda3\Lib\site-packages\ruamel*</span><br></pre></td></tr></table></figure>
+
+<p>然后继续执行安装mitmproxy，若依然报错</p>
+<p><strong>使用Everything进行搜索删除，比较干净</strong></p>
+<p><img src="/posts/e51995b4/image-20210224124747264.png" alt="image-20210224124747264"></p>
+<p>重新尝试安装mitmproxy</p>
+<p>成功截图</p>
+<p><img src="/posts/e51995b4/image-20210224125016412.png" alt="image-20210224125016412"></p>
+<p>并且pip list查看 发现新版本安装成功</p>
+<p><img src="/posts/e51995b4/image-20210224124312862.png" alt="image-20210224124312862"></p>
+<h5 id="方法二：修改安装命令，忽略已安装的包"><a href="#方法二：修改安装命令，忽略已安装的包" class="headerlink" title="方法二：修改安装命令，忽略已安装的包"></a>方法二：修改安装命令，忽略已安装的包</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip3 install -r requirements.txt -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com --ignore-installed</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>小技巧</category>
+      </categories>
+      <tags>
+        <tag>mitmproxy</tag>
+        <tag>问题解决</tag>
       </tags>
   </entry>
 </search>
