@@ -18,4 +18,72 @@
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
   </entry>
+  <entry>
+    <title>使用云函数和企业微信搭建专属Server酱通知</title>
+    <url>/posts/77c89d0e.html</url>
+    <content><![CDATA[<p>work-weixin-msg-sever-api项目可以用来制作自己的专属”Server酱”</p>
+<p>原教程使用云开发和云函数方式部署，感觉有点小麻烦</p>
+<p>实践发现其实直接用云函数加上API网关触发器就可以达到效果</p>
+<span id="more"></span>
+
+<p>本文以腾讯云函数为例，大致步骤为创建云函数，上传代码，创建触发器</p>
+<h2 id="创建云函数"><a href="#创建云函数" class="headerlink" title="创建云函数"></a>创建云函数</h2><p>点击这个<a href="https://console.cloud.tencent.com/scf/list">网址</a>或者打开腾讯云官网搜索云函数进入控制台，按照下图配置：</p>
+<p><img src="/posts/77c89d0e/image-20210409190538015.png" alt="image-20210409190538015"></p>
+<p>本地上传文件夹需要先把项目克隆到本地，再选中文件夹上传就好</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 不太稳定</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zhheo/work-weixin-msg-sever-api</span><br><span class="line"><span class="comment"># 若速度太慢，可使用</span></span><br><span class="line">git <span class="built_in">clone</span> https://hub.njuu.cf/zhheo/work-weixin-msg-sever-api</span><br></pre></td></tr></table></figure>
+
+<p>上传完成，会显示压缩完成，然后点击完成</p>
+<h2 id="创建API网关触发器"><a href="#创建API网关触发器" class="headerlink" title="创建API网关触发器"></a>创建API网关触发器</h2><p>点击触发管理，创建触发器，选择API网关触发，取消集成响应，然后提交。如下图所示：</p>
+<p><img src="/posts/77c89d0e/image-20210409190834397.png" alt="image-20210409190834397"></p>
+<p>提交后会得到访问路径，如下图所示：</p>
+<p><img src="/posts/77c89d0e/image-20210409191129132.png" alt="image-20210409191129132"></p>
+<p>使用企业微信给微信发送消息的API就制作完成啦!</p>
+<h2 id="测试使用"><a href="#测试使用" class="headerlink" title="测试使用"></a>测试使用</h2><p>使用get请求，添加以下四个必要参数，拼接url即可</p>
+<h3 id="请求"><a href="#请求" class="headerlink" title="请求"></a>请求</h3><p>GET</p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>必选</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>str</td>
+<td>true</td>
+<td>企业微信公司id</td>
+</tr>
+<tr>
+<td>secert</td>
+<td>str</td>
+<td>true</td>
+<td>企业微信应用的应用secert</td>
+</tr>
+<tr>
+<td>agentId</td>
+<td>int</td>
+<td>true</td>
+<td>企业微信应用的应用agentId</td>
+</tr>
+<tr>
+<td>msg</td>
+<td>str</td>
+<td>true</td>
+<td>需要发送的内容</td>
+</tr>
+</tbody></table>
+<h3 id="拼接"><a href="#拼接" class="headerlink" title="拼接"></a>拼接</h3><p><a href="https://service-xxx.sh.apigw.tencentcs.com/release/work-weixin/?id=xxx&amp;secert=xxx&amp;agentId=xxx&amp;msg=123">https://service-xxx.sh.apigw.tencentcs.com/release/work-weixin/?id=xxx&amp;secert=xxx&amp;agentId=xxx&amp;msg=123</a></p>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p>Q：使用时一直提示缺少参数，怎么办？</p>
+<p>A：注意参数名大小写，路径是否有其他字符，例如agentId不要敲成agentid。</p>
+]]></content>
+      <categories>
+        <category>小技巧</category>
+      </categories>
+      <tags>
+        <tag>云函数</tag>
+        <tag>Serve酱</tag>
+      </tags>
+  </entry>
 </search>
