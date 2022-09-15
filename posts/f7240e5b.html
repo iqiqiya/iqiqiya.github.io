@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iqiqiya.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="目的：1.需要通过公网服务器代理连接内网机器 2.需要通过代理使得本机外网地址变为该内网机器外网IP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="frp实现内网穿透(通过设置http代理&#x2F;Socks代理)">
+<meta property="og:url" content="https://iqiqiya.com/posts/f7240e5b.html">
+<meta property="og:site_name" content="iqiqiya&#39;s blog">
+<meta property="og:description" content="目的：1.需要通过公网服务器代理连接内网机器 2.需要通过代理使得本机外网地址变为该内网机器外网IP">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-28T04:48:27.000Z">
+<meta property="article:modified_time" content="2020-11-19T04:43:27.376Z">
+<meta property="article:author" content="iqiqiya">
+<meta property="article:tag" content="frp">
+<meta property="article:tag" content="内网穿透">
+<meta property="article:tag" content="http代理">
+<meta property="article:tag" content="socks5代理">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://iqiqiya.com/posts/f7240e5b.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iqiqiya.com/posts/f7240e5b.html","path":"posts/f7240e5b.html","title":"frp实现内网穿透(通过设置http代理/Socks代理)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>frp实现内网穿透(通过设置http代理/Socks代理) | iqiqiya's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">iqiqiya's blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">iqiqiya的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E7%9A%84%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">目的：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">环境：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E4%B8%8B%E8%BD%BD%E5%B9%B6%E9%85%8D%E7%BD%AE%E5%85%AC%E7%BD%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF"><span class="nav-number">2.1.</span> <span class="nav-text">1.下载并配置公网服务器端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E4%B8%8B%E8%BD%BD%E5%B9%B6%E9%85%8D%E7%BD%AE%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">2.2.</span> <span class="nav-text">2.下载并配置客户端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E4%BB%A3%E7%90%86%E4%BD%BF%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">3.代理使用</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="iqiqiya"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">iqiqiya</p>
+  <div class="site-description" itemprop="description">喜欢的话就坚持吧！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iqiqiya" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iqiqiya" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iqiqiya@outlook.com" title="E-Mail → mailto:iqiqiya@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iqiqiya.com/posts/f7240e5b.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="iqiqiya">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iqiqiya's blog">
+      <meta itemprop="description" content="喜欢的话就坚持吧！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="frp实现内网穿透(通过设置http代理/Socks代理) | iqiqiya's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          frp实现内网穿透(通过设置http代理/Socks代理)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-05-28 12:48:27" itemprop="dateCreated datePublished" datetime="2020-05-28T12:48:27+08:00">2020-05-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-11-19 12:43:27" itemprop="dateModified" datetime="2020-11-19T12:43:27+08:00">2020-11-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Tools/" itemprop="url" rel="index"><span itemprop="name">Tools</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="目的："><a href="#目的：" class="headerlink" title="目的："></a>目的：</h3><p>1.需要通过公网服务器代理连接内网机器</p>
+<p>2.需要通过代理使得本机外网地址变为该内网机器外网IP</p>
+<span id="more"></span>
+
+<h3 id="环境："><a href="#环境：" class="headerlink" title="环境："></a>环境：</h3><h4 id="1-下载并配置公网服务器端"><a href="#1-下载并配置公网服务器端" class="headerlink" title="1.下载并配置公网服务器端"></a>1.下载并配置公网服务器端</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先下载(根据服务器版本 示例：centos7 x64)</span></span><br><span class="line"><span class="comment"># 注：0.33是frp当前最新版本（客户端与服务器端要版本匹配）</span></span><br><span class="line">wget https://github.com/fatedier/frp/releases/download/v0.33.0/frp_0.33.0_linux_amd64.tar.gz</span><br><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar -zxvf frp_0.33.0_linux_amd64.tar.gz</span><br><span class="line"><span class="comment"># 切换路径</span></span><br><span class="line"><span class="built_in">cd</span> frp_0.33.0_linux_amd64</span><br><span class="line"><span class="comment"># 编辑配置 内容在下方</span></span><br><span class="line">vim frps.ini</span><br><span class="line"><span class="comment"># 运行</span></span><br><span class="line">./frps -c ./frps.ini </span><br></pre></td></tr></table></figure>
+
+<p>frps.ini内容</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="attr">token</span> = test</span><br><span class="line"><span class="comment">#port，token自定义 保持客户端与服务端一致即可</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-下载并配置客户端"><a href="#2-下载并配置客户端" class="headerlink" title="2.下载并配置客户端"></a>2.下载并配置客户端</h4><p>这里的客户端是指想要代理的那台内网机器</p>
+<p>下载地址：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fatedier/frp/releases/download/v0.33.0/frp_0.33.0_windows_amd64.zip">https://github.com/fatedier/frp/releases/download/v0.33.0/frp_0.33.0_windows_amd64.zip</a></p>
+<p>解压后编辑frpc.ini，配置http代理与socks5代理</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="comment"># 填写自己的服务器IP</span></span><br><span class="line"><span class="attr">server_addr</span> = xxx.xxx.xx.xxx</span><br><span class="line"><span class="comment"># port，token保持一致</span></span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="attr">token</span> = test</span><br><span class="line"></span><br><span class="line"><span class="section">[plugin_http_proxy]</span></span><br><span class="line"><span class="attr">type</span> = tcp</span><br><span class="line"><span class="attr">remote_port</span> = <span class="number">7890</span></span><br><span class="line"><span class="attr">plugin</span> = http_proxy</span><br><span class="line"><span class="comment"># 可以添加认证</span></span><br><span class="line"><span class="comment"># plugin_http_user = abc</span></span><br><span class="line"><span class="comment"># plugin_http_passwd = abc</span></span><br><span class="line"></span><br><span class="line"><span class="section">[plugin_socks5]</span></span><br><span class="line"><span class="attr">type</span> = tcp</span><br><span class="line"><span class="attr">remote_port</span> = <span class="number">7891</span></span><br><span class="line"><span class="attr">plugin</span> = socks5</span><br><span class="line"><span class="comment"># plugin_user = abc</span></span><br><span class="line"><span class="comment"># plugin_passwd = abc</span></span><br></pre></td></tr></table></figure>
+
+<p>服务器要开放用到的端口，比如7000，7890，7891</p>
+<p>宝塔面板用到的话也要放行下 登录–&gt;安全–&gt;输入端口–&gt;点击放行</p>
+<p>最后运行客户端</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\frpc.exe -c .\frpc.ini</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-代理使用"><a href="#3-代理使用" class="headerlink" title="3.代理使用"></a>3.代理使用</h4><p>只代理浏览器：推荐浏览器插件SwitchOmega</p>
+<p>全局代理：win可以使用sstap  </p>
+<p>​					linux&#x2F;mac可以使用Proxifier</p>
+<p>终端代理：proxychain4</p>
+<p>还有一些，欢迎补充~</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/frp/" rel="tag"># frp</a>
+              <a href="/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" rel="tag"># 内网穿透</a>
+              <a href="/tags/http%E4%BB%A3%E7%90%86/" rel="tag"># http代理</a>
+              <a href="/tags/socks5%E4%BB%A3%E7%90%86/" rel="tag"># socks5代理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/74b62043.html" rel="prev" title="解决设置permalink后hexo-asset-image图片路径出错">
+                  <i class="fa fa-chevron-left"></i> 解决设置permalink后hexo-asset-image图片路径出错
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/a304692f.html" rel="next" title="Docker使用小记">
+                  Docker使用小记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iqiqiya</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

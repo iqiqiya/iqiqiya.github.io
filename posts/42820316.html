@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iqiqiya.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="看了两道题目，简单记录下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ciscn2020部分题目WP">
+<meta property="og:url" content="https://iqiqiya.com/posts/42820316.html">
+<meta property="og:site_name" content="iqiqiya&#39;s blog">
+<meta property="og:description" content="看了两道题目，简单记录下">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://iqiqiya.com/posts/42820316/image-20200821102357613.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/42820316/image-20200821102453812.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/42820316/clip_image001.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/42820316/clip_image002.png">
+<meta property="og:image" content="https://iqiqiya.com/posts/42820316/clip_image003.png">
+<meta property="article:published_time" content="2020-08-21T02:20:21.000Z">
+<meta property="article:modified_time" content="2021-03-29T10:03:12.633Z">
+<meta property="article:author" content="iqiqiya">
+<meta property="article:tag" content="ctf">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://iqiqiya.com/posts/42820316/image-20200821102357613.png">
+
+
+<link rel="canonical" href="https://iqiqiya.com/posts/42820316.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iqiqiya.com/posts/42820316.html","path":"posts/42820316.html","title":"ciscn2020部分题目WP"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ciscn2020部分题目WP | iqiqiya's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">iqiqiya's blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">iqiqiya的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#z3"><span class="nav-number">1.</span> <span class="nav-text">z3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#diskdump"><span class="nav-number">2.</span> <span class="nav-text">diskdump</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="iqiqiya"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">iqiqiya</p>
+  <div class="site-description" itemprop="description">喜欢的话就坚持吧！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iqiqiya" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iqiqiya" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iqiqiya@outlook.com" title="E-Mail → mailto:iqiqiya@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iqiqiya.com/posts/42820316.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="iqiqiya">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iqiqiya's blog">
+      <meta itemprop="description" content="喜欢的话就坚持吧！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ciscn2020部分题目WP | iqiqiya's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ciscn2020部分题目WP
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-21 10:20:21" itemprop="dateCreated datePublished" datetime="2020-08-21T10:20:21+08:00">2020-08-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2021-03-29 18:03:12" itemprop="dateModified" datetime="2021-03-29T18:03:12+08:00">2021-03-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>看了两道题目，简单记录下</p>
+<span id="more"></span>
+
+<h2 id="z3"><a href="#z3" class="headerlink" title="z3"></a>z3</h2><p>首先看压缩包名字是Z3，猜测题目考察的是Z3解方程</p>
+<p>载入IDA Pro发现果然如此 </p>
+<p>输入字符串 带入方程 如果解出来的42个字符与v47这个数组每一位一致就输出“win”</p>
+<p>97行下断点 动态调试 就可以拿到这个字符串 </p>
+<p><img src="/posts/42820316/image-20200821102357613.png" alt="image-20200821102357613"></p>
+<p>最终，脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Author    :iqiqiya</span></span><br><span class="line"><span class="comment"># @Blog      :iqiqiya.com</span></span><br><span class="line"><span class="comment"># @Time      :2020/8/20</span></span><br><span class="line"><span class="comment"># @FileName  :z3.py</span></span><br><span class="line"><span class="keyword">from</span> z3 <span class="keyword">import</span> *</span><br><span class="line">v4 = <span class="number">0x4F17</span></span><br><span class="line">v5 = <span class="number">0x9CF6</span></span><br><span class="line">v6 = <span class="number">0x8DDB</span></span><br><span class="line">v7 = <span class="number">0x8EA6</span></span><br><span class="line">v8 =<span class="number">0x6929</span></span><br><span class="line">v9 =<span class="number">0x9911</span></span><br><span class="line">v10 =<span class="number">0x40A2</span></span><br><span class="line">v11 = <span class="number">0x2F3E</span></span><br><span class="line">v12 =<span class="number">0x62B6</span></span><br><span class="line">v13 =<span class="number">0x4B82</span></span><br><span class="line">v14 =<span class="number">0x486C</span></span><br><span class="line">v15 =<span class="number">0x4002</span></span><br><span class="line">v16 =<span class="number">0x52D7</span></span><br><span class="line">v17 =<span class="number">0x2DEF</span></span><br><span class="line">v18 =<span class="number">0x28DC</span></span><br><span class="line">v19 =<span class="number">0x640D</span></span><br><span class="line">v20 = <span class="number">0x528F</span></span><br><span class="line">v21 =<span class="number">0x613B</span></span><br><span class="line">v22 = <span class="number">0x4781</span></span><br><span class="line">v23 =<span class="number">0x6B17</span></span><br><span class="line">v24 = <span class="number">0x3237</span></span><br><span class="line">v25 =<span class="number">0x2A93</span></span><br><span class="line">v26 =<span class="number">0x615F</span></span><br><span class="line">v27 = <span class="number">0x50BE</span></span><br><span class="line">v28 =<span class="number">0x598E</span></span><br><span class="line">v29 =<span class="number">0x4656</span></span><br><span class="line">v30 =<span class="number">0x5B31</span></span><br><span class="line">v31 =<span class="number">0x313A</span></span><br><span class="line">v32 = <span class="number">0x3010</span></span><br><span class="line">v33 =<span class="number">0x67FE</span></span><br><span class="line">v34 =<span class="number">0x4D5F</span></span><br><span class="line">v35 =<span class="number">0x58DB</span></span><br><span class="line">v36 =<span class="number">0x3799</span></span><br><span class="line">v37 =<span class="number">0x60A0</span></span><br><span class="line">v38 =<span class="number">0x2750</span></span><br><span class="line">v39 =<span class="number">0x3759</span></span><br><span class="line">v40 =<span class="number">0x8953</span></span><br><span class="line">v41 =<span class="number">0x7122</span></span><br><span class="line">v42 =<span class="number">0x81F9</span></span><br><span class="line">v43 =<span class="number">0x5524</span></span><br><span class="line">v44 =<span class="number">0x8971</span></span><br><span class="line">v45 =<span class="number">0x3A1D</span></span><br><span class="line">v46 = Int(<span class="string">&#x27;v46&#x27;</span>)</span><br><span class="line">v47 = Int(<span class="string">&#x27;v47&#x27;</span>)</span><br><span class="line">v48 = Int(<span class="string">&#x27;v48&#x27;</span>)</span><br><span class="line">v49 = Int(<span class="string">&#x27;v49&#x27;</span>)</span><br><span class="line">v50 = Int(<span class="string">&#x27;v50&#x27;</span>)</span><br><span class="line">v51 = Int(<span class="string">&#x27;v51&#x27;</span>)</span><br><span class="line">v52 = Int(<span class="string">&#x27;v52&#x27;</span>)</span><br><span class="line">v53 = Int(<span class="string">&#x27;v53&#x27;</span>)</span><br><span class="line">v54 = Int(<span class="string">&#x27;v54&#x27;</span>)</span><br><span class="line">v55 = Int(<span class="string">&#x27;v55&#x27;</span>)</span><br><span class="line">v56 = Int(<span class="string">&#x27;v56&#x27;</span>)</span><br><span class="line">v57 = Int(<span class="string">&#x27;v57&#x27;</span>)</span><br><span class="line">v58 = Int(<span class="string">&#x27;v58&#x27;</span>)</span><br><span class="line">v59 = Int(<span class="string">&#x27;v59&#x27;</span>)</span><br><span class="line">v60 = Int(<span class="string">&#x27;v60&#x27;</span>)</span><br><span class="line">v61 = Int(<span class="string">&#x27;v61&#x27;</span>)</span><br><span class="line">v62 = Int(<span class="string">&#x27;v62&#x27;</span>)</span><br><span class="line">v63 = Int(<span class="string">&#x27;v63&#x27;</span>)</span><br><span class="line">v64 = Int(<span class="string">&#x27;v64&#x27;</span>)</span><br><span class="line">v65 = Int(<span class="string">&#x27;v65&#x27;</span>)</span><br><span class="line">v66 = Int(<span class="string">&#x27;v66&#x27;</span>)</span><br><span class="line">v67 = Int(<span class="string">&#x27;v67&#x27;</span>)</span><br><span class="line">v68 = Int(<span class="string">&#x27;v68&#x27;</span>)</span><br><span class="line">v69 = Int(<span class="string">&#x27;v69&#x27;</span>)</span><br><span class="line">v70 = Int(<span class="string">&#x27;v70&#x27;</span>)</span><br><span class="line">v71 = Int(<span class="string">&#x27;v71&#x27;</span>)</span><br><span class="line">v72 = Int(<span class="string">&#x27;v72&#x27;</span>)</span><br><span class="line">v73 = Int(<span class="string">&#x27;v73&#x27;</span>)</span><br><span class="line">v74 = Int(<span class="string">&#x27;v74&#x27;</span>)</span><br><span class="line">v75 = Int(<span class="string">&#x27;v75&#x27;</span>)</span><br><span class="line">v76 = Int(<span class="string">&#x27;v76&#x27;</span>)</span><br><span class="line">v77 = Int(<span class="string">&#x27;v77&#x27;</span>)</span><br><span class="line">v78 = Int(<span class="string">&#x27;v78&#x27;</span>)</span><br><span class="line">v79 = Int(<span class="string">&#x27;v79&#x27;</span>)</span><br><span class="line">v80 = Int(<span class="string">&#x27;v80&#x27;</span>)</span><br><span class="line">v81 = Int(<span class="string">&#x27;v81&#x27;</span>)</span><br><span class="line">v82 = Int(<span class="string">&#x27;v82&#x27;</span>)</span><br><span class="line">v83 = Int(<span class="string">&#x27;v83&#x27;</span>)</span><br><span class="line">v84 = Int(<span class="string">&#x27;v84&#x27;</span>)</span><br><span class="line">v85 = Int(<span class="string">&#x27;v85&#x27;</span>)</span><br><span class="line">v86 = Int(<span class="string">&#x27;v86&#x27;</span>)</span><br><span class="line">v87 = Int(<span class="string">&#x27;v87&#x27;</span>)</span><br><span class="line">s = Solver()</span><br><span class="line">s.add(v4 == <span class="number">34</span> * v49 + <span class="number">12</span> * v46 + <span class="number">53</span> * v47 + <span class="number">6</span> * v48 + <span class="number">58</span> * v50 + <span class="number">36</span> * v51 + v52)</span><br><span class="line">s.add(v5 == <span class="number">27</span> * v50 + <span class="number">73</span> * v49 + <span class="number">12</span> * v48 + <span class="number">83</span> * v46 + <span class="number">85</span> * v47 + <span class="number">96</span> * v51 + <span class="number">52</span> * v52)</span><br><span class="line">s.add(v6 == <span class="number">24</span> * v48 + <span class="number">78</span> * v46 + <span class="number">53</span> * v47 + <span class="number">36</span> * v49 + <span class="number">86</span> * v50 + <span class="number">25</span> * v51 + <span class="number">46</span> * v52)</span><br><span class="line">s.add(v7 == <span class="number">78</span> * v47 + <span class="number">39</span> * v46 + <span class="number">52</span> * v48 + <span class="number">9</span> * v49 + <span class="number">62</span> * v50 + <span class="number">37</span> * v51 + <span class="number">84</span> * v52)</span><br><span class="line">s.add(v8 == <span class="number">48</span> * v50 + <span class="number">14</span> * v48 + <span class="number">23</span> * v46 + <span class="number">6</span> * v47 + <span class="number">74</span> * v49 + <span class="number">12</span> * v51 + <span class="number">83</span> * v52)</span><br><span class="line">s.add(v9 == <span class="number">15</span> * v51 + <span class="number">48</span> * v50 + <span class="number">92</span> * v48 + <span class="number">85</span> * v47 + <span class="number">27</span> * v46 + <span class="number">42</span> * v49 + <span class="number">72</span> * v52)</span><br><span class="line">s.add(v10 == <span class="number">26</span> * v51 + <span class="number">67</span> * v49 + <span class="number">6</span> * v47 + <span class="number">4</span> * v46 + <span class="number">3</span> * v48 + <span class="number">68</span> * v52)</span><br><span class="line">s.add(v11 == <span class="number">34</span> * v56 + <span class="number">12</span> * v53 + <span class="number">53</span> * v54 + <span class="number">6</span> * v55 + <span class="number">58</span> * v57 + <span class="number">36</span> * v58 + v59)</span><br><span class="line">s.add(v12 == <span class="number">27</span> * v57 + <span class="number">73</span> * v56 + <span class="number">12</span> * v55 + <span class="number">83</span> * v53 + <span class="number">85</span> * v54 + <span class="number">96</span> * v58 + <span class="number">52</span> * v59)</span><br><span class="line">s.add(v13 == <span class="number">24</span> * v55 + <span class="number">78</span> * v53 + <span class="number">53</span> * v54 + <span class="number">36</span> * v56 + <span class="number">86</span> * v57 + <span class="number">25</span> * v58 + <span class="number">46</span> * v59)</span><br><span class="line">s.add(v14 == <span class="number">78</span> * v54 + <span class="number">39</span> * v53 + <span class="number">52</span> * v55 + <span class="number">9</span> * v56 + <span class="number">62</span> * v57 + <span class="number">37</span> * v58 + <span class="number">84</span> * v59)</span><br><span class="line">s.add(v15 == <span class="number">48</span> * v57 + <span class="number">14</span> * v55 + <span class="number">23</span> * v53 + <span class="number">6</span> * v54 + <span class="number">74</span> * v56 + <span class="number">12</span> * v58 + <span class="number">83</span> * v59)</span><br><span class="line">s.add(v16 == <span class="number">15</span> * v58 + <span class="number">48</span> * v57 + <span class="number">92</span> * v55 + <span class="number">85</span> * v54 + <span class="number">27</span> * v53 + <span class="number">42</span> * v56 + <span class="number">72</span> * v59)</span><br><span class="line">s.add(v17 == <span class="number">26</span> * v58 + <span class="number">67</span> * v56 + <span class="number">6</span> * v54 + <span class="number">4</span> * v53 + <span class="number">3</span> * v55 + <span class="number">68</span> * v59)</span><br><span class="line">s.add(v18 == <span class="number">34</span> * v63 + <span class="number">12</span> * v60 + <span class="number">53</span> * v61 + <span class="number">6</span> * v62 + <span class="number">58</span> * v64 + <span class="number">36</span> * v65 + v66)</span><br><span class="line">s.add(v19 == <span class="number">27</span> * v64 + <span class="number">73</span> * v63 + <span class="number">12</span> * v62 + <span class="number">83</span> * v60 + <span class="number">85</span> * v61 + <span class="number">96</span> * v65 + <span class="number">52</span> * v66)</span><br><span class="line">s.add(v20 == <span class="number">24</span> * v62 + <span class="number">78</span> * v60 + <span class="number">53</span> * v61 + <span class="number">36</span> * v63 + <span class="number">86</span> * v64 + <span class="number">25</span> * v65 + <span class="number">46</span> * v66)</span><br><span class="line">s.add(v21 == <span class="number">78</span> * v61 + <span class="number">39</span> * v60 + <span class="number">52</span> * v62 + <span class="number">9</span> * v63 + <span class="number">62</span> * v64 + <span class="number">37</span> * v65 + <span class="number">84</span> * v66)</span><br><span class="line">s.add(v22 == <span class="number">48</span> * v64 + <span class="number">14</span> * v62 + <span class="number">23</span> * v60 + <span class="number">6</span> * v61 + <span class="number">74</span> * v63 + <span class="number">12</span> * v65 + <span class="number">83</span> * v66)</span><br><span class="line">s.add(v23 == <span class="number">15</span> * v65 + <span class="number">48</span> * v64 + <span class="number">92</span> * v62 + <span class="number">85</span> * v61 + <span class="number">27</span> * v60 + <span class="number">42</span> * v63 + <span class="number">72</span> * v66)</span><br><span class="line">s.add(v24 == <span class="number">26</span> * v65 + <span class="number">67</span> * v63 + <span class="number">6</span> * v61 + <span class="number">4</span> * v60 + <span class="number">3</span> * v62 + <span class="number">68</span> * v66)</span><br><span class="line">s.add(v25 == <span class="number">34</span> * v70 + <span class="number">12</span> * v67 + <span class="number">53</span> * v68 + <span class="number">6</span> * v69 + <span class="number">58</span> * v71 + <span class="number">36</span> * v72 + v73)</span><br><span class="line">s.add(v26 == <span class="number">27</span> * v71 + <span class="number">73</span> * v70 + <span class="number">12</span> * v69 + <span class="number">83</span> * v67 + <span class="number">85</span> * v68 + <span class="number">96</span> * v72 + <span class="number">52</span> * v73)</span><br><span class="line">s.add(v27 == <span class="number">24</span> * v69 + <span class="number">78</span> * v67 + <span class="number">53</span> * v68 + <span class="number">36</span> * v70 + <span class="number">86</span> * v71 + <span class="number">25</span> * v72 + <span class="number">46</span> * v73)</span><br><span class="line">s.add(v28 == <span class="number">78</span> * v68 + <span class="number">39</span> * v67 + <span class="number">52</span> * v69 + <span class="number">9</span> * v70 + <span class="number">62</span> * v71 + <span class="number">37</span> * v72 + <span class="number">84</span> * v73)</span><br><span class="line">s.add(v29 == <span class="number">48</span> * v71 + <span class="number">14</span> * v69 + <span class="number">23</span> * v67 + <span class="number">6</span> * v68 + <span class="number">74</span> * v70 + <span class="number">12</span> * v72 + <span class="number">83</span> * v73)</span><br><span class="line">s.add(v30 == <span class="number">15</span> * v72 + <span class="number">48</span> * v71 + <span class="number">92</span> * v69 + <span class="number">85</span> * v68 + <span class="number">27</span> * v67 + <span class="number">42</span> * v70 + <span class="number">72</span> * v73)</span><br><span class="line">s.add(v31 == <span class="number">26</span> * v72 + <span class="number">67</span> * v70 + <span class="number">6</span> * v68 + <span class="number">4</span> * v67 + <span class="number">3</span> * v69 + <span class="number">68</span> * v73)</span><br><span class="line">s.add(v32 == <span class="number">34</span> * v77 + <span class="number">12</span> * v74 + <span class="number">53</span> * v75 + <span class="number">6</span> * v76 + <span class="number">58</span> * v78 + <span class="number">36</span> * v79 + v80</span><br><span class="line">s.add(v33 == <span class="number">27</span> * v78 + <span class="number">73</span> * v77 + <span class="number">12</span> * v76 + <span class="number">83</span> * v74 + <span class="number">85</span> * v75 + <span class="number">96</span> * v79 + <span class="number">52</span> * v80)</span><br><span class="line">s.add(v34 == <span class="number">24</span> * v76 + <span class="number">78</span> * v74 + <span class="number">53</span> * v75 + <span class="number">36</span> * v77 + <span class="number">86</span> * v78 + <span class="number">25</span> * v79 + <span class="number">46</span> * v80)</span><br><span class="line">s.add(v35 == <span class="number">78</span> * v75 + <span class="number">39</span> * v74 + <span class="number">52</span> * v76 + <span class="number">9</span> * v77 + <span class="number">62</span> * v78 + <span class="number">37</span> * v79 + <span class="number">84</span> * v80)</span><br><span class="line">s.add(v36 == <span class="number">48</span> * v78 + <span class="number">14</span> * v76 + <span class="number">23</span> * v74 + <span class="number">6</span> * v75 + <span class="number">74</span> * v77 + <span class="number">12</span> * v79 + <span class="number">83</span> * v80)</span><br><span class="line">s.add(v37 == <span class="number">15</span> * v79 + <span class="number">48</span> * v78 + <span class="number">92</span> * v76 + <span class="number">85</span> * v75 + <span class="number">27</span> * v74 + <span class="number">42</span> * v77 + <span class="number">72</span> * v80)</span><br><span class="line">s.add(v38 == <span class="number">26</span> * v79 + <span class="number">67</span> * v77 + <span class="number">6</span> * v75 + <span class="number">4</span> * v74 + <span class="number">3</span> * v76 + <span class="number">68</span> * v80)</span><br><span class="line">s.add(v39 == <span class="number">34</span> * v84 + <span class="number">12</span> * v81 + <span class="number">53</span> * v82 + <span class="number">6</span> * v83 + <span class="number">58</span> * v85 + <span class="number">36</span> * v86 + v87)</span><br><span class="line">s.add(v40 == <span class="number">27</span> * v85 + <span class="number">73</span> * v84 + <span class="number">12</span> * v83 + <span class="number">83</span> * v81 + <span class="number">85</span> * v82 + <span class="number">96</span> * v86 + <span class="number">52</span> * v87)</span><br><span class="line">s.add(v41 == <span class="number">24</span> * v83 + <span class="number">78</span> * v81 + <span class="number">53</span> * v82 + <span class="number">36</span> * v84 + <span class="number">86</span> * v85 + <span class="number">25</span> * v86 + <span class="number">46</span> * v87)</span><br><span class="line">s.add(v42 == <span class="number">78</span> * v82 + <span class="number">39</span> * v81 + <span class="number">52</span> * v83 + <span class="number">9</span> * v84 + <span class="number">62</span> * v85 + <span class="number">37</span> * v86 + <span class="number">84</span> * v87)</span><br><span class="line">s.add(v43 == <span class="number">48</span> * v85 + <span class="number">14</span> * v83 + <span class="number">23</span> * v81 + <span class="number">6</span> * v82 + <span class="number">74</span> * v84 + <span class="number">12</span> * v86 + <span class="number">83</span> * v87)</span><br><span class="line">s.add(v44 == <span class="number">15</span> * v86 + <span class="number">48</span> * v85 + <span class="number">92</span> * v83 + <span class="number">85</span> * v82 + <span class="number">27</span> * v81 + <span class="number">42</span> * v84 + <span class="number">72</span> * v87)</span><br><span class="line">s.add(v45 == <span class="number">26</span> * v86 + <span class="number">67</span> * v84 + <span class="number">6</span> * v82 + <span class="number">4</span> * v81 + <span class="number">3</span> * v83 + <span class="number">68</span> * v87)</span><br><span class="line"></span><br><span class="line">s.check()</span><br><span class="line">result = s.model()</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<p>得到乱序的字符，按顺序输出就好</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Author    :iqiqiya</span></span><br><span class="line"><span class="comment"># @Blog      :iqiqiya.com</span></span><br><span class="line"><span class="comment"># @Time      :2020/8/20</span></span><br><span class="line"><span class="comment"># @FileName  :77.py</span></span><br><span class="line">v84 = <span class="number">54</span></span><br><span class="line">v65 = <span class="number">52</span></span><br><span class="line">v63 = <span class="number">57</span></span><br><span class="line">v74 = <span class="number">45</span></span><br><span class="line">v47 = <span class="number">108</span></span><br><span class="line">v62 = <span class="number">98</span></span><br><span class="line">v81 = <span class="number">97</span></span><br><span class="line">v64 = <span class="number">45</span></span><br><span class="line">v48 = <span class="number">97</span></span><br><span class="line">v51 = <span class="number">55</span></span><br><span class="line">v58 = <span class="number">51</span></span><br><span class="line">v53 = <span class="number">49</span></span><br><span class="line">v49 = <span class="number">103</span></span><br><span class="line">v55 = <span class="number">49</span></span><br><span class="line">v57 = <span class="number">52</span></span><br><span class="line">v67 = <span class="number">49</span></span><br><span class="line">v54 = <span class="number">55</span></span><br><span class="line">v70 = <span class="number">57</span></span><br><span class="line">v69 = <span class="number">45</span></span><br><span class="line">v56 = <span class="number">100</span></span><br><span class="line">v86 = <span class="number">56</span></span><br><span class="line">v72 = <span class="number">48</span></span><br><span class="line">v60 = <span class="number">54</span></span><br><span class="line">v78 = <span class="number">52</span></span><br><span class="line">v68 = <span class="number">56</span></span><br><span class="line">v79 = <span class="number">99</span></span><br><span class="line">v75 = <span class="number">54</span></span><br><span class="line">v46 = <span class="number">102</span></span><br><span class="line">v77 = <span class="number">49</span></span><br><span class="line">v76 = <span class="number">101</span></span><br><span class="line">v50 = <span class="number">123</span></span><br><span class="line">v61 = <span class="number">51</span></span><br><span class="line">v71 = <span class="number">57</span></span><br><span class="line">v82 = <span class="number">102</span></span><br><span class="line">v83 = <span class="number">101</span></span><br><span class="line">v85 = <span class="number">52</span></span><br><span class="line">v87 = <span class="number">125</span></span><br><span class="line">v80 = <span class="number">50</span></span><br><span class="line">v73 = <span class="number">101</span></span><br><span class="line">v66 = <span class="number">101</span></span><br><span class="line">v59 = <span class="number">45</span></span><br><span class="line">v52 = <span class="number">101</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">chr</span>(v46)+<span class="built_in">chr</span>(v47)+<span class="built_in">chr</span>(v48)+<span class="built_in">chr</span>(v49)+<span class="built_in">chr</span>(v50)+<span class="built_in">chr</span>(v51)+<span class="built_in">chr</span>(v52)+<span class="built_in">chr</span>(v53)+</span><br><span class="line">      <span class="built_in">chr</span>(v54)+<span class="built_in">chr</span>(v55)+<span class="built_in">chr</span>(v56)+<span class="built_in">chr</span>(v57)+<span class="built_in">chr</span>(v58)+<span class="built_in">chr</span>(v59)+<span class="built_in">chr</span>(v60)+<span class="built_in">chr</span>(v61)</span><br><span class="line">+<span class="built_in">chr</span>(v62)+<span class="built_in">chr</span>(v63)+<span class="built_in">chr</span>(v64)+<span class="built_in">chr</span>(v65)+<span class="built_in">chr</span>(v66)+<span class="built_in">chr</span>(v67)+<span class="built_in">chr</span>(v68)+<span class="built_in">chr</span>(v69)+</span><br><span class="line">      <span class="built_in">chr</span>(v70) + <span class="built_in">chr</span>(v71)</span><br><span class="line">      + <span class="built_in">chr</span>(v72) + <span class="built_in">chr</span>(v73) + <span class="built_in">chr</span>(v74) + <span class="built_in">chr</span>(v75) + <span class="built_in">chr</span>(v76) + <span class="built_in">chr</span>(v77) + <span class="built_in">chr</span>(v78) + <span class="built_in">chr</span>(v79)</span><br><span class="line">      +<span class="built_in">chr</span>(v80)+<span class="built_in">chr</span>(v81)</span><br><span class="line">+<span class="built_in">chr</span>(v82)+<span class="built_in">chr</span>(v83)+<span class="built_in">chr</span>(v84)+<span class="built_in">chr</span>(v85)+<span class="built_in">chr</span>(v86)+<span class="built_in">chr</span>(v87))</span><br></pre></td></tr></table></figure>
+
+<p>运行得到flag</p>
+<p><img src="/posts/42820316/image-20200821102453812.png" alt="image-20200821102453812"></p>
+<h2 id="diskdump"><a href="#diskdump" class="headerlink" title="diskdump"></a>diskdump</h2><p>使用<strong>binwalk -e disk_dump</strong>分离得到0.ext文件</p>
+<p>可以继续分离，也可以挂载到文件系统</p>
+<p><strong>mount 0.ext &#x2F;mnt</strong></p>
+<p>进入目录 得到misc01文件夹，里面有三个文件</p>
+<p><img src="/posts/42820316/clip_image001.png" alt="img"></p>
+<p>分析demo 得到加密算法</p>
+<p><img src="/posts/42820316/clip_image002.png" alt="img"></p>
+<p>真实加密后的flag还是在diskdump中（ps：这里就比较脑洞了）</p>
+<p>十六进制搜索加密后的特征<strong>44 2A 03</strong></p>
+<p><img src="/posts/42820316/clip_image003.png" alt="img"></p>
+<p> 图片打开提示flag已经被删除了，后来发现其实这里也可以使用**extundelete **恢复出flag.txt</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apt-get install extundelete</span><br><span class="line">extundelete disk_dump --restore-all</span><br><span class="line"><span class="built_in">cd</span> RECOVERED_FILES/</span><br><span class="line"><span class="built_in">cd</span> misc01/</span><br><span class="line"><span class="built_in">cat</span> flag.txt</span><br></pre></td></tr></table></figure>
+
+<p>编写脚本就可以得到flag，如下所示</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line">fake_flag = [<span class="number">0x44</span>, <span class="number">0x2A</span>, <span class="number">0x03</span>, <span class="number">0xE5</span>, <span class="number">0x29</span>, <span class="number">0xBC</span>, <span class="number">0x96</span>, <span class="number">0x7F</span>, </span><br><span class="line"><span class="number">0x55</span>, <span class="number">0x35</span>, <span class="number">0x1B</span>, <span class="number">0xE1</span>, <span class="number">0xDD</span>, <span class="number">0xA4</span>, <span class="number">0x85</span>, <span class="number">0xA2</span>, <span class="number">0x1D</span>, </span><br><span class="line"><span class="number">0x0E</span>, <span class="number">0xEF</span>, <span class="number">0xD0</span>, <span class="number">0xA7</span>, <span class="number">0x6B</span>]</span><br><span class="line">real_flag = [<span class="number">0x44</span>, <span class="number">0x2A</span>, <span class="number">0x03</span>, <span class="number">0xE5</span>, <span class="number">0x29</span>, <span class="number">0xA3</span>, <span class="number">0xAF</span>, <span class="number">0x62</span>, <span class="number">0x05</span>, <span class="number">0x31</span>, <span class="number">0x4E</span>, <span class="number">0xF3</span>, </span><br><span class="line"><span class="number">0xD6</span>, <span class="number">0xEB</span>, <span class="number">0x90</span>, <span class="number">0x66</span>, <span class="number">0x24</span>, <span class="number">0x5C</span>, <span class="number">0xB7</span>, <span class="number">0x92</span>, <span class="number">0xF6</span>, <span class="number">0xD7</span>, <span class="number">0x4D</span>, <span class="number">0x0B</span>, </span><br><span class="line"><span class="number">0x6A</span>, <span class="number">0x41</span>, <span class="number">0xA3</span>, <span class="number">0x85</span>, <span class="number">0xEF</span>, <span class="number">0x90</span>, <span class="number">0x5A</span>, <span class="number">0x7E</span>, <span class="number">0x5B</span>, <span class="number">0xEC</span>, <span class="number">0xC1</span>, <span class="number">0xF0</span>, </span><br><span class="line"><span class="number">0xD4</span>, <span class="number">0x61</span>, <span class="number">0x12</span>, <span class="number">0x12</span>, <span class="number">0x45</span>, <span class="number">0xEB</span>, <span class="number">0xB8</span>]</span><br><span class="line">i = <span class="number">0</span></span><br><span class="line">v4 = <span class="number">0x22</span></span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(real_flag)):</span><br><span class="line">	ff = (v4 ^ real_flag[j]) - i</span><br><span class="line">	<span class="built_in">print</span>(<span class="built_in">hex</span>(ff &amp; <span class="number">0xff</span>))</span><br><span class="line">	flag += <span class="built_in">chr</span>(ff &amp; <span class="number">0xff</span>)</span><br><span class="line">	v4 += <span class="number">0x22</span></span><br><span class="line">	i = (i + <span class="number">2</span>) &amp; <span class="number">0xF</span></span><br><span class="line">	<span class="built_in">print</span>(flag)</span><br><span class="line"><span class="comment">#flag&#123;e5d7c4ed-b8f6-4417-8317-b809fc26c047&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ctf/" rel="tag"># ctf</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/adb6226f.html" rel="prev" title="信息搜集（黑盒）小记">
+                  <i class="fa fa-chevron-left"></i> 信息搜集（黑盒）小记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/a4848fd3.html" rel="next" title="docker-compose build加速构建">
+                  docker-compose build加速构建 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iqiqiya</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"iqiqiya.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="介绍 It’s Greasemonkey for native apps, or, put in more technical terms, it’s a dynamic code instrumentation toolkit. It lets you inject snippets of JavaScript or your own library into native apps on Wi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="frida使用小记">
+<meta property="og:url" content="https://iqiqiya.com/posts/a9684198.html">
+<meta property="og:site_name" content="iqiqiya&#39;s blog">
+<meta property="og:description" content="介绍 It’s Greasemonkey for native apps, or, put in more technical terms, it’s a dynamic code instrumentation toolkit. It lets you inject snippets of JavaScript or your own library into native apps on Wi">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-01T08:58:16.000Z">
+<meta property="article:modified_time" content="2020-12-20T14:51:46.153Z">
+<meta property="article:author" content="iqiqiya">
+<meta property="article:tag" content="frida">
+<meta property="article:tag" content="reverse">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://iqiqiya.com/posts/a9684198.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://iqiqiya.com/posts/a9684198.html","path":"posts/a9684198.html","title":"frida使用小记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>frida使用小记 | iqiqiya's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">iqiqiya's blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">iqiqiya的博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%AE%89%E8%A3%85%EF%BC%88Mac-os%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">服务端安装（Mac os）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E8%A3%85%EF%BC%88Android%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">客户端安装（Android）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">5.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#frida-API-%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8"><span class="nav-number">6.1.</span> <span class="nav-text">frida API 自动补全</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%AE%89%E8%A3%85%EF%BC%88Win10%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">服务端安装（Win10）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8A%A5%E9%94%99%EF%BC%9A"><span class="nav-number">6.2.1.</span> <span class="nav-text">报错：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%EF%BC%9A"><span class="nav-number">6.2.2.</span> <span class="nav-text">解决：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">6.3.</span> <span class="nav-text">参考链接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB"><span class="nav-number">6.4.</span> <span class="nav-text">推荐阅读</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="iqiqiya"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">iqiqiya</p>
+  <div class="site-description" itemprop="description">喜欢的话就坚持吧！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/iqiqiya" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;iqiqiya" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:iqiqiya@outlook.com" title="E-Mail → mailto:iqiqiya@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://iqiqiya.com/posts/a9684198.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="iqiqiya">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="iqiqiya's blog">
+      <meta itemprop="description" content="喜欢的话就坚持吧！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="frida使用小记 | iqiqiya's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          frida使用小记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-01 16:58:16" itemprop="dateCreated datePublished" datetime="2020-06-01T16:58:16+08:00">2020-06-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-12-20 22:51:46" itemprop="dateModified" datetime="2020-12-20T22:51:46+08:00">2020-12-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Reverse/" itemprop="url" rel="index"><span itemprop="name">Reverse</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><blockquote>
+<p>It’s <a target="_blank" rel="noopener" href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey</a> for native apps, or, put in more technical terms, it’s a dynamic code instrumentation toolkit. It lets you inject snippets of JavaScript or your own library into native apps on Windows, macOS, GNU&#x2F;Linux, iOS, Android, and QNX. Frida also provides you with some simple tools built on top of the Frida API. These can be used as-is, tweaked to your needs, or serve as examples of how to use the API.———官网</p>
+</blockquote>
+<h3 id="服务端安装（Mac-os）"><a href="#服务端安装（Mac-os）" class="headerlink" title="服务端安装（Mac os）"></a>服务端安装（Mac os）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装python3</span></span><br><span class="line">brew install python</span><br><span class="line"><span class="comment"># 安装virtualenv 有的时候可能需要root权限  前面加sudo</span></span><br><span class="line">python3 -m pip install virtualenv</span><br><span class="line"><span class="comment"># 在~/Desktop/frida目录下创建虚拟环境</span></span><br><span class="line">virtualenv --python=python3 ~/Desktop/frida</span><br><span class="line"><span class="comment"># 切换到frida环境</span></span><br><span class="line"><span class="built_in">source</span> ~/Desktop/frida/bin/activite</span><br></pre></td></tr></table></figure>
+
+<p>到这时还未装frida</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装frida</span></span><br><span class="line">pip install frida</span><br><span class="line"><span class="comment"># 安装相关工具</span></span><br><span class="line">pip install frida-tools</span><br><span class="line"><span class="comment">#安装可能需要几分钟时间...</span></span><br><span class="line"><span class="comment">#安装完成后会提示 successfully built frida</span></span><br><span class="line"><span class="comment">#查看版本信息</span></span><br><span class="line">frida --version</span><br></pre></td></tr></table></figure>
+
+<p>在这时环境配置完成，用的时候只需要激活下就好</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/Desktop/frida/bin/activite</span><br></pre></td></tr></table></figure>
+
+<h3 id="客户端安装（Android）"><a href="#客户端安装（Android）" class="headerlink" title="客户端安装（Android）"></a>客户端安装（Android）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据线连接Android设备</span></span><br><span class="line"><span class="comment"># 开启开发者模式 USB调试(XiaoMi手机要关闭MIUI优化)</span></span><br><span class="line"><span class="comment"># adb devices查看有无此设备</span></span><br><span class="line"><span class="comment"># 新开启一个命令窗口</span></span><br><span class="line"><span class="comment"># 下载frida-server 解压 并推送到Android设备</span></span><br><span class="line"><span class="comment"># 地址：https://github.com/frida/frida/releases</span></span><br><span class="line">wget https://github.com/frida/frida/releases/download/12.9.4/frida-server-12.9.4-android-arm64.xz</span><br><span class="line"><span class="comment"># 解压 xz没有的话装一下</span></span><br><span class="line">xz -d frida-server-12.9.4-android-arm64.xz</span><br><span class="line"><span class="comment"># 推送</span></span><br><span class="line">adb push frida-server-12.9.4-android-arm64 /data/local/tmp</span><br></pre></td></tr></table></figure>
+
+<h3 id="执行"><a href="#执行" class="headerlink" title="执行"></a>执行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入此设备命令行</span></span><br><span class="line">adb shell</span><br><span class="line"><span class="comment"># 获取root权限 手机端要授予权限(通过Magisk或者其他)</span></span><br><span class="line">su</span><br><span class="line"><span class="comment"># 切换路径</span></span><br><span class="line"><span class="built_in">cd</span> /data/local/tmp</span><br><span class="line"><span class="comment"># 为了方便 可以重命名</span></span><br><span class="line"><span class="built_in">mv</span> frida-server-12.9.4-android-arm64 frida-server</span><br><span class="line"><span class="comment"># 给执行权限</span></span><br><span class="line"><span class="built_in">chmod</span> +x frida-server</span><br><span class="line"><span class="comment"># 执行</span></span><br><span class="line">./frida-server</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以编写js脚本或通过python脚本使用frida执行hook操作了</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>这个后续补充~~~</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><h4 id="frida-API-自动补全"><a href="#frida-API-自动补全" class="headerlink" title="frida API 自动补全"></a>frida API 自动补全</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载</span></span><br><span class="line">wget https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/frida-gum/index.d.ts</span><br><span class="line"><span class="comment"># 移动</span></span><br><span class="line"><span class="built_in">mv</span> index.ts ~/Desktop/frida</span><br><span class="line"><span class="comment"># 使用时在js文件开头加入下面这行调用</span></span><br><span class="line">///&lt;reference path=<span class="string">&#x27;/Users/iqiqiya/Desktop/frida/frida-gum.d.ts&#x27;</span>/&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="服务端安装（Win10）"><a href="#服务端安装（Win10）" class="headerlink" title="服务端安装（Win10）"></a>服务端安装（Win10）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install virtualenv -i https://pypi.douban.com/simple</span><br><span class="line"><span class="comment"># 注：python -m可不加 -i指定第三方库的下载源是豆瓣，https也可改为http</span></span><br><span class="line">virtualenv --python=python frida</span><br><span class="line"><span class="comment"># 切换目录后，指定创建frida文件夹及虚拟环境</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="报错："><a href="#报错：" class="headerlink" title="报错："></a>报错：</h5><p>FileNotFoundError: [Errno 2] No such file or directory: ‘c:\software\anaconda3\Lib\venv\scripts\nt\python.exe’</p>
+<p>FileNotFoundError: [Errno 2] No such file or directory: ‘c:\software\anaconda3\Lib\venv\scripts\nt\pythonw.exe’</p>
+<h5 id="解决："><a href="#解决：" class="headerlink" title="解决："></a>解决：</h5><p>复制安装路径下的python.exe及pythonw.exe到nt目录下即可</p>
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yi_nuo_wang/article/details/100268593">https://blog.csdn.net/yi_nuo_wang/article/details/100268593</a></p>
+<h4 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/freakishfox/article/details/78302741">Frida官方手册 - 在Android上使用Frida</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/tag/frida">FreeBuf tags about frida</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/frida/" rel="tag"># frida</a>
+              <a href="/tags/reverse/" rel="tag"># reverse</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/a9fe26b3.html" rel="prev" title="Nubia Z18 fastboot模式下OEM解锁">
+                  <i class="fa fa-chevron-left"></i> Nubia Z18 fastboot模式下OEM解锁
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/812b3f7e.html" rel="next" title="Lua开发环境搭建 for mac">
+                  Lua开发环境搭建 for mac <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">iqiqiya</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
